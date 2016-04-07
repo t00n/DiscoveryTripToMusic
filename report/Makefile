@@ -1,3 +1,6 @@
+
+report.pdf: report.tex
+
 %.pdf: %.tex
 	pdflatex $<
 	# bibtex $(subst .tex,,$<)
