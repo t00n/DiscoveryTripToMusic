@@ -24,50 +24,29 @@ The project consists of predicting the composer, style, year, key and instrument
 
 We decided to use feature vector based methods. We are presenting here features that we might use. This list is not exhaustive. The features are classed by the charateristic to predict.
 
-\subsection{Note}
+\subsection{Features}
+    Notes are charaterized by duration, pitch and velocity. Because there might be a lot of notes, we propose to use the following features to reduce the size of the feature vector. We also have the time signature, tempo and key as features.
 
-Notes are charaterized by duration, pitch and velocity. Because there might be a lot of notes, we propose to use the following features to reduce the size of the feature vector.
+    \begin{itemize}
+        \item Mean and standard deviation of duration (long notes or short notes)
+        \item Mean and standard deviation of pitch of the notes (monotone or not)
+        \item Mean and standard deviation of velocity (general volume and emphasis given on each note)
+        \item Mean and standard deviation of the note density (mean number of notes by unit of time + "burst of notes" =~ rythm of the song) 
+        \item Mean length of a phrase
+        \item Number of phrases
+        \item Mean and standard deviation of interval between notes
+        \item statistical frequency of each note \todo{other ??}
+        % depending on the time signature, the sequence of the first note of bars
+        \item structures
+        \item envelopes
+    \end{itemize}
+
+\subsection{More}
 
 \begin{itemize}
-    \item Mean and standard deviation of duration (long notes or short notes)
-    \item Mean and standard deviation of pitch of the notes (monotone or not)
-    \item Mean and standard deviation of velocity (general volume and emphasis given on each note)
-    \item Mean and standard deviation of the note/time distribution (mean number of notes by unit of time + "burst of notes" =~ rythm of the song) 
-    \item Mean length of a phrase
-    \item Number of phrases
-    \item Mean and standard deviation of interval between notes
-\end{itemize}
-
-\subsection{Key}
-
-Key depends on the time signature and the notes. 
-
-\begin{itemize}
-    \item statistical frequency of each note \todo{other ??}
-    % depending on the time signature, the sequence of the first note of bars
-    \item structure 
-    \item The set mel-frequency cepstral coefficients (MFCC) for music discrimination tasks.
     \item Further research 1: Extensibility
     \item Further research 2: Automatic classification(using a hierarchy that could be represented as a tree and the feature extraction should update in real time)
-    \item Further research 3: Temporal behavior of features, such as Psychoacoustic features, Auditory filterbank temporal
-    \item envelopes
 \end{itemize}
-
-\subsection{Composer}
-
-Composer depends on the features of note, key and time signature
-
-\subsection{Style}
-
-Style depends on the features of notes, key and time signature
-
-\subsection{Year}
-
-Year depends on style and composer
-
-\subsection{Instrument}
-
-Instrument depends on year, style and composer
 
 \bibliography{main}
 \end{document}
