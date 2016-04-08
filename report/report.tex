@@ -8,7 +8,7 @@
 \usepackage{fullpage}
 \usepackage{todo}
 
-\author{Antoine CARPENTIER}
+\author{\textbf{DiscoveryTripToMusic}\\CARPENTIER Antoine - 0529527 \\LIU Xinyu - 0526434}
 \title{Current Trends of Artificial Intelligence\\ \small Programming Assignment : Phase 1}
 
 \bibliographystyle{apalike}
@@ -22,25 +22,41 @@ The project consists of predicting the composer, style, year, key and instrument
 
 \section{Computational representation : features vector}
 
-We decided to use feature vector based methods. We are presenting here features that we might use. This list is not exhaustive. The features are classed by the charateristic to predict.
+We decided to use feature vector based methods. We are presenting here features that we might use. This list is not exhaustive as we might add or remove several features to improve performance.
 
 \subsection{Features}
     Notes are charaterized by duration, pitch and velocity. For each song, we have also have tempo and time signature data. Some songs also have a key data. Because the key data is not always present, we might use semi-supervised learning for the key prediction.
-    Other predictions will use the following features derived from notes, tempo and time signature : 
+    Other predictions will use the following features derived from notes, tempo and time signature. Most features are inspired from \cite{mckay2004} and already used in \cite{mckay2004automatic} and \cite{mckay2004automatic2}.
 
-    \begin{itemize}
-        \item Difference between the highest and lowest pitch
-        \item Difference between the highest and lowest duration
-        \item Difference between the highest and lowest velocity
-        \item Mean and standard deviation of duration (long notes or short notes)
-        \item Mean and standard deviation of pitch of the notes (monotone or not)
-        \item Mean and standard deviation of velocity (general volume and emphasis given on each note)
-        \item Mean and standard deviation of the note density (mean number of notes by unit of time + "burst of notes" =~ rythm of the song) 
-        \item Mean length of a phrase
+    \subsubsection{Pitch-based features}
+        \begin{itemize}
+            \item Difference between the highest and lowest pitch
+            \item Mean and standard deviation of the pitch : this will indicate the monotony of the song
+            \item The proportion of bass, medium and high pitches (the three classes are defined as MIDI notes respectively from 0 to 53, 54 to 71 and 72 to 127)
+            \item Most common chord used. A \textbf{chord} is defined as a group of notes played at the same time
+            \item Mean interval between the most common chord
+        \end{itemize}
+    \subsubsection{Duration-based features}
+        \begin{itemize}
+            \item Difference between the highest and lowest duration
+            \item Mean and standard deviation of duration
+            \item Maximum and minimum note duration
+            \item Mean and standard deviation of interval between notes (silences)
+        \end{itemize}
+
+    \subsubsection{Velocity-based features}
+        \begin{itemize}
+            \item Difference between the highest and lowest velocity
+            \item Mean and standard deviation of velocity. This will allow to measure the general volume of the song and the emphasis given on notes.
+            \item Proportion of "strong" notes (notes with the highest velocity)
+        \end{itemize}
+
+    \subsubsection{Note density based features}
+        We will compute the distribution of notes by unit of time (for example five seconds). \textbf{Phrases} are defined as clusters of notes.
+    \begin{itemize}     
+        \item Mean and standard deviation of the note density. This will allow to measure if there are a lot of "burst of notes" or if the notes are regularly distributed. It will give an insight at the rythm of the song.
+        \item Mean and standard deviation of the length of a phrase
         \item Number of phrases
-        \item Mean and standard deviation of interval between notes
-        \item statistical frequency of each note \todo{other ??}
-        % depending on the time signature, the sequence of the first note of bars
     \end{itemize}
 
 \subsection{Further improvements}
