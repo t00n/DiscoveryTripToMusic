@@ -21,6 +21,25 @@ The project consists of predicting the composer, style, year, key and instrument
 
 \section{Computational representation : features vector}
 
+We decided to use feature vector based methods. We are presenting here features that we might use. This list is not exhaustive. The features are classed by the charateristic to predict.
+
+\subsection{Key}
+
+Key depends on the time signature and the notes. Notes are charaterized by duration, pitch and velocity. Because there might be a lot of notes, we propose to use the following features :
+
+\begin{itemize}
+    \item Mean of duration of the notes
+    \item Standard deviation of pitch of the notes
+    \item Mean and standard deviation of velocity
+\end{itemize}
+
+\subsection{Composer}
+
+\subsection{Style}
+
+\subsection{Year}
+
+\subsection{Instrument}
 
 \bibliography{main}
 \end{document}
