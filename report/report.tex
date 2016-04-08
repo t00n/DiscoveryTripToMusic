@@ -25,7 +25,8 @@ The project consists of predicting the composer, style, year, key and instrument
 We decided to use feature vector based methods. We are presenting here features that we might use. This list is not exhaustive. The features are classed by the charateristic to predict.
 
 \subsection{Features}
-    Notes are charaterized by duration, pitch and velocity. Because there might be a lot of notes, we propose to use the following features to reduce the size of the feature vector. We also have the time signature, tempo and key as features.
+    Notes are charaterized by duration, pitch and velocity. For each song, we have also have tempo and time signature data. Some songs also have a key data. Because the key data is not always present, we might use semi-supervised learning for the key prediction.
+    Other predictions will use the following features derived from notes, tempo and time signature : 
 
     \begin{itemize}
         \item Difference between the highest and lowest pitch
@@ -42,12 +43,14 @@ We decided to use feature vector based methods. We are presenting here features 
         % depending on the time signature, the sequence of the first note of bars
     \end{itemize}
 
-\subsection{More}
+\subsection{Further improvements}
+
+We present here improvements that could be made to the implementation of features.
 
 \begin{itemize}
-    \item Further research 1: Extensibility: The first thing we would like to do is to improve the extensibility, since it will help us to support new concepts and structures. Changing the parameters is the key for improving the performance of our representaiton. 
-    \item Further research 2: We propose to change the classification to be automatical by using a hierarchy and updating the feature extraction in real time.
-    \item Further research 3: If the furhter data is sufficient enough, we would like to try different structures to present our features or we would like to preprocess our data by some mathematic models. Furthermore, we also would like to consider some temporal behavior of features, like psychological influence, temporal envelope processing by the human auditory system, if there are reletive data samples. Because some research propose that the temporal behavior of features is important for music classification (McKinney & Breebaart, 2003).
+    \item Extensibility: The first thing we would like to do is to permit extensibility, since it will help us to support new concepts and structures. Changing the parameters is the key for improving the performance of our representation.
+    \item We propose to change the classification to be automatical by using a hierarchy and updating the feature extraction in real time. That way we could select the best features.
+    \item If the further data is sufficient enough, we would like to try different structures to present our features or we would like to preprocess our data with some mathematic models. This could be easily done using the raw audio signal for each song. Furthermore, we also would like to consider some temporal behavior of features, like psychological influence, temporal envelope processing by the human auditory system, if there are relative data samples. Because some research propose that the temporal behavior of features is important for music classification \cite{mckinney2003features}.
 \end{itemize}
 
 \bibliography{main}
