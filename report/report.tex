@@ -8,7 +8,7 @@
 \usepackage{fullpage}
 \usepackage{todo}
 
-\author{\textbf{DiscoveryTripToMusic}\\CARPENTIER Antoine - 0529527 \\LIU Xinyu - 0526434}
+\author{Antoine CARPENTIER}
 \title{Current Trends of Artificial Intelligence\\ \small Programming Assignment : Phase 1}
 
 \bibliographystyle{apalike}
@@ -18,7 +18,7 @@
 
 \section{Introduction}
 
-The project consists of predicting the composer, style, year, key and instrument for several songs, using a dataset from the \cite{jazzomat}.
+The project consists of predicting the composer, style, year, key and instrument for several songs, using a dataset from the Jazzomat Research Project (\url{http://jazzomat.hfm-weimar.de/dbformat/dbcontent.html}).
 
 \section{Computational representation : features vector}
 
@@ -27,35 +27,27 @@ We decided to use feature vector based methods. We are presenting here features 
 \subsection{Features}
     Notes are charaterized by duration, pitch and velocity. Because there might be a lot of notes, we propose to use the following features to reduce the size of the feature vector. We also have the time signature, tempo and key as features.
 
-    Inspired from \cite{mckay2004} cited in \cite{mckay2004automatic} and \cite{mckay2004automatic2}
     \begin{itemize}
         \item Difference between the highest and lowest pitch
         \item Difference between the highest and lowest duration
         \item Difference between the highest and lowest velocity
         \item Mean and standard deviation of duration (long notes or short notes)
-        \item maximum and minimum note duration
         \item Mean and standard deviation of pitch of the notes (monotone or not)
-        \item Most common pitch class (note)
-        \item Importance of Bass, Medium and High registers (MIDI notes from 0 -> 54 -> 72 -> 127)
         \item Mean and standard deviation of velocity (general volume and emphasis given on each note)
-        \item Mean and standard deviation of the note density (mean number of notes by unit of time (example : 5seconds) + "burst of notes" =~ rythm of the song) 
-        \item Mean length of a phrase (cluster notes into phrases or use bars)
+        \item Mean and standard deviation of the note density (mean number of notes by unit of time + "burst of notes" =~ rythm of the song) 
+        \item Mean length of a phrase
         \item Number of phrases
         \item Mean and standard deviation of interval between notes
         \item statistical frequency of each note \todo{other ??}
-        \item Proportion of "strong" notes (highest velocity)
-        \item Most common chord used
-        \item Mean interval between most common chord
         % depending on the time signature, the sequence of the first note of bars
     \end{itemize}
 
 \subsection{More}
 
 \begin{itemize}
-    \item Further research 1: Extensibility
-    \item Further research 2: Automatic classification(using a hierarchy that could be represented as a tree and the feature extraction should update in real time)
-    \item structures
-    \item envelopes
+    \item Further research 1: Extensibility: The first thing we would like to do is to improve the extensibility, since it will help us to support new concepts and structures. Changing the parameters is the key for improving the performance of our representaiton. 
+    \item Further research 2: We propose to change the classification to be automatical by using a hierarchy and updating the feature extraction in real time.
+    \item Further research 3: If the furhter data is sufficient enough, we would like to try different structures to present our features or we would like to preprocess our data by some mathematic models. Furthermore, we also would like to consider some temporal behavior of features, like psychological influence, temporal envelope processing by the human auditory system, if there are reletive data samples. Because some research propose that the temporal behavior of features is important for music classification (McKinney & Breebaart, 2003).
 \end{itemize}
 
 \bibliography{main}
