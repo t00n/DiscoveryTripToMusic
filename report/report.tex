@@ -30,9 +30,12 @@ Notes are charaterized by duration, pitch and velocity. Because there might be a
 
 \begin{itemize}
     \item Mean and standard deviation of duration (long notes or short notes)
-    \item Standard deviation of pitch of the notes (monotone or not)
-    \item Mean and standard deviation of velocity (emphasis given on each note)
+    \item Mean and standard deviation of pitch of the notes (monotone or not)
+    \item Mean and standard deviation of velocity (general volume and emphasis given on each note)
     \item Mean and standard deviation of the note/time distribution (mean number of notes by unit of time + "burst of notes" =~ rythm of the song) 
+    \item Mean length of a phrase
+    \item Number of phrases
+    \item Mean and standard deviation of interval between notes
 \end{itemize}
 
 \subsection{Key}
@@ -42,10 +45,6 @@ Key depends on the time signature and the notes.
 \begin{itemize}
     \item statistical frequency of each note \todo{other ??}
     % depending on the time signature, the sequence of the first note of bars
-    \item The set mel-frequency cepstral coefficients (MFCC) for music discrimination tasks.
-    \item Further research 1: Automatic classification(using a hierarchy that could be represented as a tree and the feature
-    \item extraction should update in real time)
-    \item Further research 2: Temporal behavior of features, such as Psychoacoustic features, Auditory filterbank temporal       
     \item envelopes
 \end{itemize}
 
@@ -64,6 +63,10 @@ Year depends on style and composer
 \subsection{Instrument}
 
 Instrument depends on year, style and composer
+
+\subsection{Automatic selection of features}    
+
+Further research 1: Automatic classification (using a hierarchy that could be represented as a tree and the feature extraction should update in real time)
 
 \bibliography{main}
 \end{document}
