@@ -32,13 +32,19 @@ We decided to use feature vector based methods. We are presenting here features 
         \item Difference between the highest and lowest duration
         \item Difference between the highest and lowest velocity
         \item Mean and standard deviation of duration (long notes or short notes)
+        \item maximum and minimum note duration
         \item Mean and standard deviation of pitch of the notes (monotone or not)
+        \item Most common pitch class (note)
+        \item Importance of Bass, Medium and High registers (MIDI notes from 0 -> 54 -> 72 -> 127)
         \item Mean and standard deviation of velocity (general volume and emphasis given on each note)
-        \item Mean and standard deviation of the note density (mean number of notes by unit of time + "burst of notes" =~ rythm of the song) 
-        \item Mean length of a phrase
+        \item Mean and standard deviation of the note density (mean number of notes by unit of time (example : 5seconds) + "burst of notes" =~ rythm of the song) 
+        \item Mean length of a phrase (cluster notes into phrases or use bars)
         \item Number of phrases
         \item Mean and standard deviation of interval between notes
         \item statistical frequency of each note \todo{other ??}
+        \item Proportion of "strong" notes (highest velocity)
+        \item Most common chord used
+        \item Mean interval between most common chord
         % depending on the time signature, the sequence of the first note of bars
     \end{itemize}
 
