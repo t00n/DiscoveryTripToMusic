@@ -28,6 +28,9 @@ We decided to use feature vector based methods. We are presenting here features 
     Notes are charaterized by duration, pitch and velocity. Because there might be a lot of notes, we propose to use the following features to reduce the size of the feature vector. We also have the time signature, tempo and key as features.
 
     \begin{itemize}
+        \item Difference between the highest and lowest pitch
+        \item Difference between the highest and lowest duration
+        \item Difference between the highest and lowest velocity
         \item Mean and standard deviation of duration (long notes or short notes)
         \item Mean and standard deviation of pitch of the notes (monotone or not)
         \item Mean and standard deviation of velocity (general volume and emphasis given on each note)
@@ -37,8 +40,6 @@ We decided to use feature vector based methods. We are presenting here features 
         \item Mean and standard deviation of interval between notes
         \item statistical frequency of each note \todo{other ??}
         % depending on the time signature, the sequence of the first note of bars
-        \item structures
-        \item envelopes
     \end{itemize}
 
 \subsection{More}
@@ -46,6 +47,8 @@ We decided to use feature vector based methods. We are presenting here features 
 \begin{itemize}
     \item Further research 1: Extensibility
     \item Further research 2: Automatic classification(using a hierarchy that could be represented as a tree and the feature extraction should update in real time)
+    \item structures
+    \item envelopes
 \end{itemize}
 
 \bibliography{main}
