@@ -1,4 +1,6 @@
 from pandas import DataFrame, read_csv, Series
+from sklearn.cluster import KMeans, DBSCAN
+import numpy as np
 import csv
 
 DATA_REP = "../data/"
@@ -53,9 +55,14 @@ def create_song_features(data):
     def note_highest_velocity():
         return notes.groupby(4).max()[5].idxmax()
     # density based features
+    def notes_on():
+        return notes[notes[2].str[:7] == 'Note_on'][1]
     def density():
         pass
-    return [bpm, pitch().max(), pitch().min(), pitch().mean(), pitch().std(), proportion_high(), proportion_medium(), proportion_bass(), duration.max(), duration.min(), duration.mean(), duration.std(), velocity().max(), velocity().min(), velocity().mean(), velocity().std(), note_highest_velocity()]
+    notes_on = notes_on()
+    unique, counts = np.unique(DBSCAN(400).fit_predict(notes_on.values.reshape(-1, 1)), return_counts=True)
+
+    return [bpm, pitch().max(), pitch().min(), pitch().mean(), pitch().std(), proportion_high(), proportion_medium(), proportion_bass(), duration.max(), duration.min(), duration.mean(), duration.std(), velocity().max(), velocity().min(), velocity().mean(), velocity().std(), note_highest_velocity(), counts.mean(), counts.std()]
 
 
 output = read_header(HEADER_FILE)
