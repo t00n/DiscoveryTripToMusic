@@ -15,7 +15,10 @@ def read_header(f):
     return read_csv(HEADER_FILE, header=0, sep=';')
 
 def create_song_features(data):
-    """ missing chords based features """
+    """ missing 
+            * chords based features
+            * silences based features
+    """
     notes = DataFrame(list(map(lambda x: [int(x[0]), int(x[1]), x[2], int(x[3]), int(x[4]), int(x[5])], filter(lambda x: x[2][:4] == "Note", data))))
     # pitch based features
     def pitch():
@@ -40,7 +43,12 @@ def create_song_features(data):
                 on[str(t)] = note[1]
         return Series(durations)
     duration = duration()
-    return [pitch().max(), pitch().min(), pitch().mean(), pitch().std(), proportion_high(), proportion_medium(), proportion_bass(), duration.max(), duration.min(), duration.mean(), duration.std()]
+    # velocity based features
+    def velocity():
+        return notes[5]
+    def note_highest_velocity():
+        return notes.groupby(4).max()[5].idxmax()
+    return [pitch().max(), pitch().min(), pitch().mean(), pitch().std(), proportion_high(), proportion_medium(), proportion_bass(), duration.max(), duration.min(), duration.mean(), duration.std(), velocity().max(), velocity().min(), velocity().mean(), velocity().std(), note_highest_velocity()]
 
 
 output = read_header(HEADER_FILE)
