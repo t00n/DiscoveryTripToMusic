@@ -19,12 +19,12 @@ def read_header(f):
 def create_song_features(data):
     """ missing 
             * chords based features
-            * silences based features
             * phrases based features
         "proportion of strong notes" was replaced by "note with highest velocity"
     """
     notes = DataFrame(list(map(lambda x: [int(x[0]), int(x[1]), x[2], int(x[3]), int(x[4]), int(x[5])], filter(lambda x: x[2][:4] == "Note", data))))
     tempo = int(list(filter(lambda x: x[2] == "Tempo", data))[0][3])
+    total_time = notes[1].max()
     def tempo_to_bpm(tempo):
         return 60000000/tempo
     bpm = tempo_to_bpm(tempo)
@@ -51,6 +51,19 @@ def create_song_features(data):
                 on[str(t)] = note[1]
         return Series(durations)
     duration = duration()
+    def silence():
+        silences = []
+        on = None
+        for i, note in notes.iterrows():
+            if on:
+                silences.append(note[1] - on)
+                on = None
+            else:
+                on = note[1]
+        return Series(silences)
+    silence = silence()
+    def silence_proportion():
+        return silence.sum() / total_time
     # velocity based features
     def velocity():
         return notes[5]
@@ -64,7 +77,7 @@ def create_song_features(data):
     notes_on = notes_on()
     unique, counts = np.unique(DBSCAN(400).fit_predict(notes_on.values.reshape(-1, 1)), return_counts=True)
 
-    return [bpm, pitch().max(), pitch().min(), pitch().mean(), pitch().std(), proportion_high(), proportion_medium(), proportion_bass(), duration.max(), duration.min(), duration.mean(), duration.std(), velocity().max(), velocity().min(), velocity().mean(), velocity().std(), note_highest_velocity(), counts.mean(), counts.std()]
+    return [bpm, pitch().max(), pitch().min(), pitch().mean(), pitch().std(), proportion_high(), proportion_medium(), proportion_bass(), duration.max(), duration.min(), duration.mean(), duration.std(), velocity().max(), velocity().min(), velocity().mean(), velocity().std(), note_highest_velocity(), counts.mean(), counts.std(), silence_proportion(), silence.mean(), silence.std()]
 
 
 output = read_header(HEADER_FILE)
