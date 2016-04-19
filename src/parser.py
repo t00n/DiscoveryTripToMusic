@@ -20,6 +20,8 @@ def create_song_features(data):
     """ missing 
             * chords based features
             * silences based features
+            * phrases based features
+        "proportion of strong notes" was replaced by "note with highest velocity"
     """
     notes = DataFrame(list(map(lambda x: [int(x[0]), int(x[1]), x[2], int(x[3]), int(x[4]), int(x[5])], filter(lambda x: x[2][:4] == "Note", data))))
     tempo = int(list(filter(lambda x: x[2] == "Tempo", data))[0][3])
