@@ -21,6 +21,14 @@ def read_song(id):
 def read_header(f):
     return read_csv(HEADER_FILE, header=0, sep=';')
 
+def parse_key_signature(data):
+    try:
+        one, two = list(filter(lambda x: x[2] == "Key_signature", data))[0][-2:]
+        key_signature = (int(one), (1 if two == '"major"' else 2))
+    except:
+        key_signature = None
+    return key_signature
+
 def create_song_features(data):
     """ missing 
             * chords based features
@@ -28,11 +36,6 @@ def create_song_features(data):
         "proportion of strong notes" was replaced by "note with highest velocity"
     """
     time_signature = map(int, list(filter(lambda x: x[2] == "Time_signature", data))[0][-4:])
-    # try:
-    #     one, two = list(filter(lambda x: x[2] == "Key_signature", data))[0][-2:]
-    #     key_signature = [int(one), (1 if two == '"major"' else 2)]
-    # except:
-    #     key_signature = []
     notes = DataFrame(list(map(lambda x: [int(x[0]), int(x[1]), x[2], int(x[3]), int(x[4]), int(x[5])], filter(lambda x: x[2][:4] == "Note", data))))
     tempo = int(list(filter(lambda x: x[2] == "Tempo", data))[0][3])
     total_time = notes[1].max()
@@ -88,9 +91,7 @@ def create_song_features(data):
 
     return [bpm, pitch().max(), pitch().min(), pitch().mean(), pitch().std(), proportion_high(), proportion_medium(), proportion_bass(), duration.max(), duration.min(), duration.mean(), duration.std(), velocity().max(), velocity().min(), velocity().mean(), velocity().std(), note_highest_velocity(), density.mean(), density.std(), silence_proportion(), silence.mean(), silence.std(), *time_signature]
 
-
 output = read_header(HEADER_FILE)
-composers = output['Performer']
 
 try:
     songs = json.load(open("cache.json"))
@@ -104,12 +105,19 @@ except:
     songs = np.array(songs)
     json.dump(songs.tolist(), open("cache.json", "w"))
 
-composers_id = [i//5 for i in range(len(composers))]
-print(composers_id)
+
 clf = SVC()
-clf.fit(songs, composers_id)
+clf.fit(songs, output['Performer'])
 res = clf.predict(songs)
-print(res)
+
+clf.fit(songs, output['Inst.'])
+res = clf.predict(songs)
+
+clf.fit(songs, output['Style'])
+res = clf.predict(songs)
+
+clf.fit(songs, output['Year'])
+res = clf.predict(songs)
 
 
 
