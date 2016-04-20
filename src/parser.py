@@ -3,6 +3,7 @@ from sklearn.cluster import KMeans, DBSCAN
 from sklearn import datasets
 from sklearn.multiclass import OneVsOneClassifier
 from sklearn.svm import LinearSVC, SVC
+from sklearn.linear_model import LinearRegression
 import numpy as np
 import csv
 from tqdm import tqdm
@@ -90,37 +91,31 @@ def create_song_features(data):
     notes_on = notes_on()
     unique, density = np.unique(DBSCAN(400).fit_predict(notes_on.values.reshape(-1, 1)), return_counts=True)
 
-    return list(map(float, [bpm, pitch().max(), pitch().min(), pitch().mean(), pitch().std(), proportion_high(), proportion_medium(), proportion_bass(), duration.max(), duration.min(), duration.mean(), duration.std(), velocity().max(), velocity().min(), velocity().mean(), velocity().std(), note_highest_velocity(), density.mean(), density.std(), silence_proportion(), silence.mean(), silence.std(), *time_signature])), parse_key_signature(data)
+    return list(map(float, [bpm, pitch().max(), pitch().min(), pitch().mean(), pitch().std(), proportion_high(), proportion_medium(), proportion_bass(), duration.max(), duration.min(), duration.mean(), duration.std(), velocity().max(), velocity().min(), velocity().mean(), velocity().std(), note_highest_velocity(), density.mean(), density.std(), silence_proportion(), silence.mean(), silence.std(), *time_signature]))
 
-def write_prediction(filename, composers, instruments, styles, years, keys):
+def write_prediction(filename, composers, instruments, styles, years, tempos):
     with open(filename, 'w', newline='') as csvfile:
-        writer = csv.writer(csvfile, delimiter=',',
+        writer = csv.writer(csvfile, delimiter=';',
                                 quotechar='|', quoting=csv.QUOTE_MINIMAL)
         for i in range(len(composers)):
-            writer.writerow([composers[i], instruments[i], styles[i], years[i], keys[i]])
+            writer.writerow([composers[i], instruments[i], styles[i], years[i], tempos[i]])
 
 def load_songs_features(filename):
-    print(filename)
     header = read_header(filename)
     songs = []
-    songs_with_key = []
-    keys_classes = []
     for index, row in tqdm(header.iterrows()):
         data = read_song(int(row[0]))
-        features, key_signature = create_song_features(data)
+        features = create_song_features(data)
         songs.append(features)
-        if key_signature:
-            songs_with_key.append(features)
-            keys_classes.append(key_signature)
     songs = np.array(songs)
-    songs_with_key = np.array(songs_with_key)
-    keys_classes = list(map(str, keys_classes))
-    return header, songs, songs_with_key, keys_classes
+    return header, songs
 
-output, training_set, training_set_with_keys, keys_classes = load_songs_features(sys.argv[1])
-_, test_set, _, _ = load_songs_features(sys.argv[2])
+output, training_set = load_songs_features(sys.argv[1])
+_, test_set = load_songs_features(sys.argv[2])
 
 clf = SVC()
+linear = LinearRegression()
+
 clf.fit(training_set, output[1])
 composers = clf.predict(test_set)
 
@@ -130,11 +125,11 @@ instruments = clf.predict(test_set)
 clf.fit(training_set, output[4])
 styles = clf.predict(test_set)
 
-clf.fit(training_set, output[5])
-years = clf.predict(test_set)
+linear.fit(training_set, output[5])
+years = linear.predict(test_set)
 
-clf.fit(training_set_with_keys, keys_classes)
-keys = clf.predict(test_set)
+linear.fit(training_set, output[6])
+tempos = linear.predict(test_set)
 
-write_prediction(sys.argv[3], composers, instruments, styles, years, keys)
+write_prediction(sys.argv[3], composers, instruments, styles, years, tempos)
 
