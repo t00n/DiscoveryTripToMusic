@@ -7,6 +7,7 @@ import numpy as np
 import csv
 from tqdm import tqdm
 import json
+import sys
 
 DATA_REP = "../data/"
 HEADER_FILE = DATA_REP + "dataset-balanced.csv"
@@ -24,7 +25,7 @@ def read_header(f):
 def parse_key_signature(data):
     try:
         one, two = list(filter(lambda x: x[2] == "Key_signature", data))[0][-2:]
-        key_signature = (int(one), (1 if two == '"major"' else 2))
+        key_signature = one + two
     except:
         key_signature = None
     return key_signature
@@ -91,6 +92,13 @@ def create_song_features(data):
 
     return list(map(float, [bpm, pitch().max(), pitch().min(), pitch().mean(), pitch().std(), proportion_high(), proportion_medium(), proportion_bass(), duration.max(), duration.min(), duration.mean(), duration.std(), velocity().max(), velocity().min(), velocity().mean(), velocity().std(), note_highest_velocity(), density.mean(), density.std(), silence_proportion(), silence.mean(), silence.std(), *time_signature])), parse_key_signature(data)
 
+def write_prediction(composers, instruments, styles, years, keys):
+    with open('output.csv', 'w', newline='') as csvfile:
+        writer = csv.writer(csvfile, delimiter=',',
+                                quotechar='|', quoting=csv.QUOTE_MINIMAL)
+        for i in range(len(composers)):
+            writer.writerow([composers[i], instruments[i], styles[i], years[i], keys[i]])
+
 output = read_header(HEADER_FILE)
 
 try:
@@ -131,6 +139,5 @@ years = clf.predict(songs)
 clf.fit(songs_with_key, keys_classes)
 keys = clf.predict(songs)
 
-
-
+write_prediction(composers, instruments, styles, years, keys)
 
