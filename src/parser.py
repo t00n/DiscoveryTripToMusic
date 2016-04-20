@@ -89,35 +89,48 @@ def create_song_features(data):
     notes_on = notes_on()
     unique, density = np.unique(DBSCAN(400).fit_predict(notes_on.values.reshape(-1, 1)), return_counts=True)
 
-    return [bpm, pitch().max(), pitch().min(), pitch().mean(), pitch().std(), proportion_high(), proportion_medium(), proportion_bass(), duration.max(), duration.min(), duration.mean(), duration.std(), velocity().max(), velocity().min(), velocity().mean(), velocity().std(), note_highest_velocity(), density.mean(), density.std(), silence_proportion(), silence.mean(), silence.std(), *time_signature]
+    return list(map(float, [bpm, pitch().max(), pitch().min(), pitch().mean(), pitch().std(), proportion_high(), proportion_medium(), proportion_bass(), duration.max(), duration.min(), duration.mean(), duration.std(), velocity().max(), velocity().min(), velocity().mean(), velocity().std(), note_highest_velocity(), density.mean(), density.std(), silence_proportion(), silence.mean(), silence.std(), *time_signature])), parse_key_signature(data)
 
 output = read_header(HEADER_FILE)
 
 try:
-    songs = json.load(open("cache.json"))
+    songs, songs_with_key, keys_classes = json.load(open("cache.json"))
     songs = np.array(songs)
+    songs_with_key = np.array(songs_with_key)
+    keys_classes = list(map(str, keys_classes))
 except:
     songs = []
+    songs_with_key = []
+    keys_classes = []
     for index, row in tqdm(output.iterrows()):
         data = read_song(row['id'])
-        features = create_song_features(data)
-        songs.append(list(map(float, features)))
+        features, key_signature = create_song_features(data)
+        songs.append(features)
+        if key_signature:
+            songs_with_key.append(features)
+            keys_classes.append(key_signature)
     songs = np.array(songs)
-    json.dump(songs.tolist(), open("cache.json", "w"))
+    songs_with_key = np.array(songs_with_key)
+    keys_classes = list(map(str, keys_classes))
+    json.dump([songs.tolist(), songs_with_key.tolist(), keys_classes], open("cache.json", "w"))
 
 
 clf = SVC()
 clf.fit(songs, output['Performer'])
-res = clf.predict(songs)
+composers = clf.predict(songs)
 
 clf.fit(songs, output['Inst.'])
-res = clf.predict(songs)
+instruments = clf.predict(songs)
 
 clf.fit(songs, output['Style'])
-res = clf.predict(songs)
+styles = clf.predict(songs)
 
 clf.fit(songs, output['Year'])
-res = clf.predict(songs)
+years = clf.predict(songs)
+
+clf.fit(songs_with_key, keys_classes)
+keys = clf.predict(songs)
+
 
 
 
