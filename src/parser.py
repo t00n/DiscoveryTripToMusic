@@ -14,15 +14,35 @@ DATA_REP = "../data/"
 HEADER_FILE = DATA_REP + "dataset-balanced.csv"
 SONG_REP = DATA_REP + "songs/"
 
-def read_song(id):
+""" IO """
+def read_song_csv(id):
     song_file = SONG_REP + str(id) + ".csv"
     with open(song_file) as csvfile:
         reader = csv.reader(csvfile)
         return [list(map(lambda x: x.strip(), row)) for row in reader]
 
-def read_header(f):
+def read_header_csv(f):
     return read_csv(f, header=-1, sep=';')
 
+
+def write_prediction_csv(filename, composers, instruments, styles, years, tempos):
+    with open(filename, 'w', newline='') as csvfile:
+        writer = csv.writer(csvfile, delimiter=';',
+                                quotechar='|', quoting=csv.QUOTE_MINIMAL)
+        for i in range(len(composers)):
+            writer.writerow([composers[i], instruments[i], styles[i], years[i], tempos[i]])
+
+def parse_songs(filename):
+    header = read_header_csv(filename)
+    songs = []
+    for index, row in tqdm(header.iterrows()):
+        data = read_song_csv(int(row[0]))
+        features = create_song_features(data)
+        songs.append(features)
+    songs = np.array(songs)
+    return header, songs
+
+""" Features extraction """
 def parse_key_signature(data):
     try:
         one, two = list(filter(lambda x: x[2] == "Key_signature", data))[0][-2:]
@@ -93,43 +113,29 @@ def create_song_features(data):
 
     return list(map(float, [bpm, pitch().max(), pitch().min(), pitch().mean(), pitch().std(), proportion_high(), proportion_medium(), proportion_bass(), duration.max(), duration.min(), duration.mean(), duration.std(), velocity().max(), velocity().min(), velocity().mean(), velocity().std(), note_highest_velocity(), density.mean(), density.std(), silence_proportion(), silence.mean(), silence.std(), *time_signature]))
 
-def write_prediction(filename, composers, instruments, styles, years, tempos):
-    with open(filename, 'w', newline='') as csvfile:
-        writer = csv.writer(csvfile, delimiter=';',
-                                quotechar='|', quoting=csv.QUOTE_MINIMAL)
-        for i in range(len(composers)):
-            writer.writerow([composers[i], instruments[i], styles[i], years[i], tempos[i]])
+def prediction(training_file, test_file, output_file):
+    output, training_set = parse_songs(training_file)
+    _, test_set = parse_songs(test_file)
 
-def load_songs_features(filename):
-    header = read_header(filename)
-    songs = []
-    for index, row in tqdm(header.iterrows()):
-        data = read_song(int(row[0]))
-        features = create_song_features(data)
-        songs.append(features)
-    songs = np.array(songs)
-    return header, songs
+    clf = SVC()
+    linear = LinearRegression()
 
-output, training_set = load_songs_features(sys.argv[1])
-_, test_set = load_songs_features(sys.argv[2])
+    clf.fit(training_set, output[1])
+    composers = clf.predict(test_set)
 
-clf = SVC()
-linear = LinearRegression()
+    clf.fit(training_set, output[3])
+    instruments = clf.predict(test_set)
 
-clf.fit(training_set, output[1])
-composers = clf.predict(test_set)
+    clf.fit(training_set, output[4])
+    styles = clf.predict(test_set)
 
-clf.fit(training_set, output[3])
-instruments = clf.predict(test_set)
+    linear.fit(training_set, output[5])
+    years = linear.predict(test_set)
 
-clf.fit(training_set, output[4])
-styles = clf.predict(test_set)
+    linear.fit(training_set, output[6])
+    tempos = linear.predict(test_set)
 
-linear.fit(training_set, output[5])
-years = linear.predict(test_set)
+    write_prediction_csv(output_file, composers, instruments, styles, years, tempos)
 
-linear.fit(training_set, output[6])
-tempos = linear.predict(test_set)
-
-write_prediction(sys.argv[3], composers, instruments, styles, years, tempos)
-
+if __name__ == '__main__':
+    prediction(*sys.argv[1:])
