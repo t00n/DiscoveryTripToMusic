@@ -20,7 +20,7 @@ def read_song(id):
         return [list(map(lambda x: x.strip(), row)) for row in reader]
 
 def read_header(f):
-    return read_csv(HEADER_FILE, header=0, sep=';')
+    return read_csv(f, header=-1, sep=';')
 
 def parse_key_signature(data):
     try:
@@ -92,26 +92,21 @@ def create_song_features(data):
 
     return list(map(float, [bpm, pitch().max(), pitch().min(), pitch().mean(), pitch().std(), proportion_high(), proportion_medium(), proportion_bass(), duration.max(), duration.min(), duration.mean(), duration.std(), velocity().max(), velocity().min(), velocity().mean(), velocity().std(), note_highest_velocity(), density.mean(), density.std(), silence_proportion(), silence.mean(), silence.std(), *time_signature])), parse_key_signature(data)
 
-def write_prediction(composers, instruments, styles, years, keys):
-    with open('output.csv', 'w', newline='') as csvfile:
+def write_prediction(filename, composers, instruments, styles, years, keys):
+    with open(filename, 'w', newline='') as csvfile:
         writer = csv.writer(csvfile, delimiter=',',
                                 quotechar='|', quoting=csv.QUOTE_MINIMAL)
         for i in range(len(composers)):
             writer.writerow([composers[i], instruments[i], styles[i], years[i], keys[i]])
 
-output = read_header(HEADER_FILE)
-
-try:
-    songs, songs_with_key, keys_classes = json.load(open("cache.json"))
-    songs = np.array(songs)
-    songs_with_key = np.array(songs_with_key)
-    keys_classes = list(map(str, keys_classes))
-except:
+def load_songs_features(filename):
+    print(filename)
+    header = read_header(filename)
     songs = []
     songs_with_key = []
     keys_classes = []
-    for index, row in tqdm(output.iterrows()):
-        data = read_song(row['id'])
+    for index, row in tqdm(header.iterrows()):
+        data = read_song(int(row[0]))
         features, key_signature = create_song_features(data)
         songs.append(features)
         if key_signature:
@@ -120,24 +115,26 @@ except:
     songs = np.array(songs)
     songs_with_key = np.array(songs_with_key)
     keys_classes = list(map(str, keys_classes))
-    json.dump([songs.tolist(), songs_with_key.tolist(), keys_classes], open("cache.json", "w"))
+    return header, songs, songs_with_key, keys_classes
 
+output, training_set, training_set_with_keys, keys_classes = load_songs_features(sys.argv[1])
+_, test_set, _, _ = load_songs_features(sys.argv[2])
 
 clf = SVC()
-clf.fit(songs, output['Performer'])
-composers = clf.predict(songs)
+clf.fit(training_set, output[1])
+composers = clf.predict(test_set)
 
-clf.fit(songs, output['Inst.'])
-instruments = clf.predict(songs)
+clf.fit(training_set, output[3])
+instruments = clf.predict(test_set)
 
-clf.fit(songs, output['Style'])
-styles = clf.predict(songs)
+clf.fit(training_set, output[4])
+styles = clf.predict(test_set)
 
-clf.fit(songs, output['Year'])
-years = clf.predict(songs)
+clf.fit(training_set, output[5])
+years = clf.predict(test_set)
 
-clf.fit(songs_with_key, keys_classes)
-keys = clf.predict(songs)
+clf.fit(training_set_with_keys, keys_classes)
+keys = clf.predict(test_set)
 
-write_prediction(composers, instruments, styles, years, keys)
+write_prediction(sys.argv[3], composers, instruments, styles, years, keys)
 
