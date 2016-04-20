@@ -2,7 +2,7 @@ from pandas import DataFrame, read_csv, Series
 from sklearn.cluster import KMeans, DBSCAN
 from sklearn import datasets
 from sklearn.multiclass import OneVsOneClassifier
-from sklearn.svm import LinearSVC
+from sklearn.svm import LinearSVC, SVC
 import numpy as np
 import csv
 from tqdm import tqdm
@@ -28,11 +28,11 @@ def create_song_features(data):
         "proportion of strong notes" was replaced by "note with highest velocity"
     """
     time_signature = map(int, list(filter(lambda x: x[2] == "Time_signature", data))[0][-4:])
-    try:
-        one, two = list(filter(lambda x: x[2] == "Key_signature", data))[0][-2:]
-        key_signature = [int(one), (1 if two == '"major"' else 2)]
-    except:
-        key_signature = []
+    # try:
+    #     one, two = list(filter(lambda x: x[2] == "Key_signature", data))[0][-2:]
+    #     key_signature = [int(one), (1 if two == '"major"' else 2)]
+    # except:
+    #     key_signature = []
     notes = DataFrame(list(map(lambda x: [int(x[0]), int(x[1]), x[2], int(x[3]), int(x[4]), int(x[5])], filter(lambda x: x[2][:4] == "Note", data))))
     tempo = int(list(filter(lambda x: x[2] == "Tempo", data))[0][3])
     total_time = notes[1].max()
@@ -86,7 +86,7 @@ def create_song_features(data):
     notes_on = notes_on()
     unique, density = np.unique(DBSCAN(400).fit_predict(notes_on.values.reshape(-1, 1)), return_counts=True)
 
-    return [bpm, pitch().max(), pitch().min(), pitch().mean(), pitch().std(), proportion_high(), proportion_medium(), proportion_bass(), duration.max(), duration.min(), duration.mean(), duration.std(), velocity().max(), velocity().min(), velocity().mean(), velocity().std(), note_highest_velocity(), density.mean(), density.std(), silence_proportion(), silence.mean(), silence.std(), *time_signature, *key_signature]
+    return [bpm, pitch().max(), pitch().min(), pitch().mean(), pitch().std(), proportion_high(), proportion_medium(), proportion_bass(), duration.max(), duration.min(), duration.mean(), duration.std(), velocity().max(), velocity().min(), velocity().mean(), velocity().std(), note_highest_velocity(), density.mean(), density.std(), silence_proportion(), silence.mean(), silence.std(), *time_signature]
 
 
 output = read_header(HEADER_FILE)
@@ -104,10 +104,12 @@ except:
     songs = np.array(songs)
     json.dump(songs.tolist(), open("cache.json", "w"))
 
-print(songs[0])
-print(composers[0])
-composers_id = [i for i in range(len(composers))]
-# OneVsOneClassifier(LinearSVC(random_state=0)).fit(songs, composers_id).predict(songs)
+composers_id = [i//5 for i in range(len(composers))]
+print(composers_id)
+clf = SVC()
+clf.fit(songs, composers_id)
+res = clf.predict(songs)
+print(res)
 
 
 
