@@ -1,7 +1,12 @@
 from pandas import DataFrame, read_csv, Series
 from sklearn.cluster import KMeans, DBSCAN
+from sklearn import datasets
+from sklearn.multiclass import OneVsOneClassifier
+from sklearn.svm import LinearSVC
 import numpy as np
 import csv
+from tqdm import tqdm
+import json
 
 DATA_REP = "../data/"
 HEADER_FILE = DATA_REP + "dataset-balanced.csv"
@@ -23,7 +28,11 @@ def create_song_features(data):
         "proportion of strong notes" was replaced by "note with highest velocity"
     """
     time_signature = map(int, list(filter(lambda x: x[2] == "Time_signature", data))[0][-4:])
-    key_signature = list(filter(lambda x: x[2] == "Key_signature", data))[0][-2:]
+    try:
+        one, two = list(filter(lambda x: x[2] == "Key_signature", data))[0][-2:]
+        key_signature = [int(one), (1 if two == '"major"' else 2)]
+    except:
+        key_signature = []
     notes = DataFrame(list(map(lambda x: [int(x[0]), int(x[1]), x[2], int(x[3]), int(x[4]), int(x[5])], filter(lambda x: x[2][:4] == "Note", data))))
     tempo = int(list(filter(lambda x: x[2] == "Tempo", data))[0][3])
     total_time = notes[1].max()
@@ -81,11 +90,24 @@ def create_song_features(data):
 
 
 output = read_header(HEADER_FILE)
-songs = []
+composers = output['Performer']
 
-for index, row in output.iterrows():
-    data = read_song(row['id'])
-    features = create_song_features(data)
-    print(features)
-    break
+try:
+    songs = json.load(open("cache.json"))
+    songs = np.array(songs)
+except:
+    songs = []
+    for index, row in tqdm(output.iterrows()):
+        data = read_song(row['id'])
+        features = create_song_features(data)
+        songs.append(list(map(float, features)))
+    songs = np.array(songs)
+    json.dump(songs.tolist(), open("cache.json", "w"))
+
+print(songs[0])
+print(composers[0])
+composers_id = [i for i in range(len(composers))]
+# OneVsOneClassifier(LinearSVC(random_state=0)).fit(songs, composers_id).predict(songs)
+
+
 
