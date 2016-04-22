@@ -117,7 +117,7 @@ def prediction(training_file, test_file, output_file):
     output, training_set = parse_songs(training_file)
     _, test_set = parse_songs(test_file)
 
-    clf = SVC()
+    clf = LinearSVC()
     linear = LinearRegression()
 
     clf.fit(training_set, output[1])
