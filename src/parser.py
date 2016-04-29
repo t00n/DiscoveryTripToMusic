@@ -8,11 +8,18 @@ HEADER_FILE = DATA_REP + "dataset-balanced.csv"
 SONG_REP = DATA_REP + "songs/"
 
 """ IO """
+def parseElem(elem):
+    elem = elem.strip()
+    try:
+        elem = int(elem)
+    except:
+        pass
+    return elem
 def read_song_csv(id):
     song_file = SONG_REP + str(id) + ".csv"
     with open(song_file) as csvfile:
         reader = csv.reader(csvfile)
-        return [list(map(lambda x: x.strip(), row)) for row in reader]
+        return [[parseElem(col) for col in row] for row in reader]
 
 def read_header_csv(f):
     return read_csv(f, header=-1, sep=';')
