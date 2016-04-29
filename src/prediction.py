@@ -1,23 +1,8 @@
-import sys
-from tqdm import tqdm
-from sklearn.svm import LinearSVC, SVC
+from sklearn.svm import LinearSVC
 from sklearn.linear_model import LinearRegression
+import sys
 
-from parser import *
 from features import *
-
-def get_features_vectors(filename):
-    header = read_test_csv(filename)
-    songs = []
-    for index, row in tqdm(header.iterrows()):
-        data = read_song_csv(int(row[0]))
-        features = create_song_features(data)
-        songs.append(features)
-    songs = np.array(songs)
-    return songs
-
-def get_output(filename):
-    return read_test_csv(filename)
 
 def prediction(training_file, test_file, output_file):
     training_set = get_features_vectors(training_file)

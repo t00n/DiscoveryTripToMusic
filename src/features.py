@@ -1,7 +1,24 @@
 from sklearn.cluster import KMeans, DBSCAN
-from pandas import DataFrame, Series
+from pandas import DataFrame, Series, merge
 import numpy as np
+from tqdm import tqdm
 
+from parser import *
+
+def get_features_vectors(filename):
+    header = read_output_csv(filename)
+    songs = []
+    for index, row in tqdm(header.iterrows()):
+        data = read_song_csv(int(row[0]))
+        features = create_song_features(data)
+        songs.append(features)
+    songs = np.array(songs)
+    return songs
+
+def get_output(f):
+    header = read_header_csv(HEADER_FILE)
+    output = read_output_csv(f)
+    return merge(output, header, how='inner', left_on=[0], right_on=['id'])
 
 def parse_key_signature(data):
     try:

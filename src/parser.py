@@ -1,7 +1,5 @@
-from sklearn import datasets
-from sklearn.multiclass import OneVsOneClassifier
 import csv
-from pandas import read_csv, merge
+from pandas import read_csv
 
 DATA_REP = "../data/"
 HEADER_FILE = DATA_REP + "dataset-balanced.csv"
@@ -24,16 +22,8 @@ def read_song_csv(id):
 def read_header_csv(f):
     return read_csv(f, header=0, sep=';')
 
-def read_test_csv(f):
-    return read_csv(f, header=-1, sep=';')
-
-def read_output(ids):
-    header = read_header_csv(HEADER_FILE)
-    return merge(ids, header, how='inner', left_on=[0], right_on=['id'])
-
 def read_output_csv(f):
-    output = read_test_csv(f)
-    return read_output(output)
+    return read_csv(f, header=-1, sep=';')
 
 def write_prediction_csv(filename, composers, instruments, styles, years, tempos):
     with open(filename, 'w', newline='') as csvfile:
