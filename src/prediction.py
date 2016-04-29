@@ -1,7 +1,8 @@
-from sklearn.svm import LinearSVC
+from sklearn.svm import SVC
 from sklearn.linear_model import LinearRegression
 import sys
 
+from parser import write_prediction_csv
 from features import *
 
 def prediction(training_file, test_file, output_file):
@@ -9,22 +10,22 @@ def prediction(training_file, test_file, output_file):
     output = get_output(training_file)
     test_set = get_features_vectors(test_file)
 
-    clf = LinearSVC()
+    clf = SVC()
     linear = LinearRegression()
 
-    clf.fit(training_set, output[1])
+    clf.fit(training_set, output['Performer'])
     composers = clf.predict(test_set)
 
-    clf.fit(training_set, output[3])
+    clf.fit(training_set, output['Inst.'])
     instruments = clf.predict(test_set)
 
-    clf.fit(training_set, output[4])
+    clf.fit(training_set, output['Style'])
     styles = clf.predict(test_set)
 
-    linear.fit(training_set, output[5])
+    linear.fit(training_set, output['Year'])
     years = linear.predict(test_set)
 
-    linear.fit(training_set, output[6])
+    linear.fit(training_set, output['Tempo'])
     tempos = linear.predict(test_set)
 
     if output_file != "":
