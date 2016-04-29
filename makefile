@@ -1,10 +1,12 @@
 TOZIP=src/makefile $(wildcard src\/*.py) src/crossvalidate.pl makefile readme.md requirements.txt data/
 
-project.zip:
+ZIPFILE=DiscoveryTripToMusic.zip
+
+$(ZIPFILE):
 	zip -r $@ $(TOZIP)
 
 mrproper:
-	rm project.zip
+	rm $(ZIPFILE)
 
 test:
 	make -C src test
