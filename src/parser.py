@@ -59,11 +59,7 @@ def create_song_features(data):
     """
     time_signature = map(int, list(filter(lambda x: x[2] == "Time_signature", data))[0][-4:])
     notes = DataFrame(list(map(lambda x: [int(x[0]), int(x[1]), x[2], int(x[3]), int(x[4]), int(x[5])], filter(lambda x: x[2][:4] == "Note", data))))
-    tempo = int(list(filter(lambda x: x[2] == "Tempo", data))[0][3])
     total_time = notes[1].max()
-    def tempo_to_bpm(tempo):
-        return 60000000/tempo
-    bpm = tempo_to_bpm(tempo)
     # pitch based features
     def pitch():
         return notes[4]
@@ -111,7 +107,7 @@ def create_song_features(data):
     notes_on = notes_on()
     unique, density = np.unique(DBSCAN(400).fit_predict(notes_on.values.reshape(-1, 1)), return_counts=True)
 
-    return list(map(float, [bpm, pitch().max(), pitch().min(), pitch().mean(), pitch().std(), proportion_high(), proportion_medium(), proportion_bass(), duration.max(), duration.min(), duration.mean(), duration.std(), velocity().max(), velocity().min(), velocity().mean(), velocity().std(), note_highest_velocity(), density.mean(), density.std(), silence_proportion(), silence.mean(), silence.std(), *time_signature]))
+    return [pitch().max(), pitch().min(), pitch().mean(), pitch().std(), proportion_high(), proportion_medium(), proportion_bass(), duration.max(), duration.min(), duration.mean(), duration.std(), velocity().max(), velocity().min(), velocity().mean(), velocity().std(), note_highest_velocity(), density.mean(), density.std(), silence_proportion(), silence.mean(), silence.std(), *time_signature]
 
 def prediction(training_file, test_file, output_file):
     output, training_set = parse_songs(training_file)
