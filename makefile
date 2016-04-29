@@ -11,5 +11,8 @@ mrproper:
 test:
 	make -C src test
 
+validation:
+	make -C src validation
+
 clean:
 	make -C src clean

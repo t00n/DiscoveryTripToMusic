@@ -7,18 +7,22 @@ from parser import *
 from features import *
 
 def get_features_vectors(filename):
-    header = read_header_csv(filename)
+    header = read_test_csv(filename)
     songs = []
     for index, row in tqdm(header.iterrows()):
         data = read_song_csv(int(row[0]))
         features = create_song_features(data)
         songs.append(features)
     songs = np.array(songs)
-    return header, songs
+    return songs
+
+def get_output(filename):
+    return read_test_csv(filename)
 
 def prediction(training_file, test_file, output_file):
-    output, training_set = get_features_vectors(training_file)
-    _, test_set = get_features_vectors(test_file)
+    training_set = get_features_vectors(training_file)
+    output = get_output(training_file)
+    test_set = get_features_vectors(test_file)
 
     clf = LinearSVC()
     linear = LinearRegression()
@@ -38,7 +42,9 @@ def prediction(training_file, test_file, output_file):
     linear.fit(training_set, output[6])
     tempos = linear.predict(test_set)
 
-    write_prediction_csv(output_file, composers, instruments, styles, years, tempos)
+    if output_file != "":
+        write_prediction_csv(output_file, composers, instruments, styles, years, tempos)
+    return composers, instruments, styles, years, tempos
 
 if __name__ == '__main__':
     prediction(*sys.argv[1:])
