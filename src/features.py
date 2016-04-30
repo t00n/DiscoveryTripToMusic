@@ -7,12 +7,12 @@ from parser import *
 
 NUMBER_OF_FEATURES = 5
 
-def get_features_vectors(filename):
+def get_features_vectors(filename, features_on='all'):
     header = read_output_csv(filename)
     songs = []
     for index, row in tqdm(header.iterrows()):
         data = read_song_csv(int(row[0]))
-        features = create_song_features(data)
+        features = create_song_features(data, features_on)
         songs.append(features)
     songs = np.array(songs)
     return songs
@@ -30,12 +30,14 @@ def parse_key_signature(data):
         key_signature = [0, ""]
     return key_signature
 
-def create_song_features(data, features_on = [True for i in range(5)]):
+def create_song_features(data, features_on = 'all'):
     """ missing 
             * chords based features
             * phrases based features
         "proportion of strong notes" was replaced by "note with highest velocity"
     """
+    if features_on == 'all':
+        features_on = [True for i in range(5)]
     features = []
     notes = DataFrame(list(filter(lambda x: x[2][:4] == "Note", data)))
     # pitch based features

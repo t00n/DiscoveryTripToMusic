@@ -14,5 +14,8 @@ test:
 validation:
 	make -C src validation
 
+features:
+	make -C src features
+
 clean:
 	make -C src clean

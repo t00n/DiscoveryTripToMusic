@@ -20,11 +20,11 @@ def MAPE_lin(out, i):
     assert(len(i) == len(out))
     return sum(map(lambda x: abs((x[0] - x[1])/x[0]), zip(i, out)))/36
 
-def cross_validation(error_clf, error_lin):
+def cross_validation(features_on='all', error_clf=MAPE_clf, error_lin=MAPE_lin):
     errors = [[] for i in range(5)]
     for i in range(5):
         output = get_output(TEST_FILE % i)
-        composers, instruments, styles, years, tempos = prediction(TRAINING_FILE % i, TEST_FILE %i, "")
+        composers, instruments, styles, years, tempos = prediction(TRAINING_FILE % i, TEST_FILE %i, features_on)
         errors[0].append(error_clf(list(output['Performer']), composers))
         errors[1].append(error_clf(list(output['Inst.']), instruments))
         errors[2].append(error_clf(list(output['Style']), styles))
@@ -36,7 +36,7 @@ def total_error(errors):
     return sum([sum(x) for x in errors])/25
 
 if __name__ == '__main__':
-    v = cross_validation(MAPE_clf, MAPE_lin)
+    v = cross_validation()
     errors = total_error(v)
     print(errors)
 

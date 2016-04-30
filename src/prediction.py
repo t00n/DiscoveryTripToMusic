@@ -5,10 +5,10 @@ import sys
 from parser import write_prediction_csv
 from features import *
 
-def prediction(training_file, test_file, output_file):
-    training_set = get_features_vectors(training_file)
+def prediction(training_file, test_file, features_on='all', output_file=''):
+    training_set = get_features_vectors(training_file, features_on)
     output = get_output(training_file)
-    test_set = get_features_vectors(test_file)
+    test_set = get_features_vectors(test_file, features_on)
 
     clf = SVC()
     linear = LinearRegression()
