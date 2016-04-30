@@ -35,32 +35,16 @@ def create_song_features(data):
         "proportion of strong notes" was replaced by "note with highest velocity"
     """
     time_signature = list(filter(lambda x: x[2] == "Time_signature", data))[0][-4:]
-    key_signature = parse_key_signature(data)
     notes = DataFrame(list(filter(lambda x: x[2][:4] == "Note", data)))
     total_time = notes[1].max()
+    notes_on = notes[notes[2].str[:7] == 'Note_on'][1]
     # pitch based features
-    def pitch():
-        return notes[4]
-    def proportion_high():
-        return len(pitch()[pitch() >= 72]) / len(pitch())
-    def proportion_medium():
-        return len(pitch()[54 <= pitch()][pitch() < 72]) / len(pitch())
-    def proportion_bass():
-        return len(pitch()[pitch() < 54]) / len(pitch())
+    pitch = notes[4]
+    proportion_high = len(pitch[pitch >= 72]) / len(pitch)
+    proportion_bass = len(pitch[pitch < 54]) / len(pitch)
+    proportion_medium = 1 - proportion_high - proportion_bass
     # duration based features
-    def duration():
-        durations = []
-        on = {}
-        for i, note in notes.iterrows():
-            t = (note[3], note[4])
-            if str(t) in on:
-                beg = on[str(t)]
-                durations.append(note[1] - beg)
-                del on[str(t)]
-            else:
-                on[str(t)] = note[1]
-        return Series(durations)
-    duration = duration()
+    duration = notes_on.diff()
     def silence():
         silences = []
         on = None
@@ -72,20 +56,14 @@ def create_song_features(data):
                 on = note[1]
         return Series(silences)
     silence = silence()
-    def silence_proportion():
-        return silence.sum() / total_time
+    silence_proportion = silence.sum() / total_time
     # velocity based features
-    def velocity():
-        return notes[5]
-    def note_highest_velocity():
-        return notes.groupby(4).max()[5].idxmax()
+    velocity = notes[5]
+    note_highest_velocity = notes.groupby(4).max()[5].idxmax()
     # density based features
-    def notes_on():
-        return notes[notes[2].str[:7] == 'Note_on'][1]
-    notes_on = notes_on()
     unique, density = np.unique(DBSCAN(400).fit_predict(notes_on.values.reshape(-1, 1)), return_counts=True)
 
-    return [pitch().max(), pitch().min(), pitch().mean(), pitch().std(), proportion_high(), proportion_medium(), proportion_bass(), duration.max(), duration.min(), duration.mean(), duration.std(), velocity().max(), velocity().min(), velocity().mean(), velocity().std(), note_highest_velocity(), density.mean(), density.std(), silence_proportion(), silence.mean(), silence.std(), *time_signature]
+    return [pitch.max(), pitch.min(), pitch.mean(), pitch.std(), proportion_high, proportion_medium, proportion_bass, duration.max(), duration.min(), duration.mean(), duration.std(), velocity.max(), velocity.min(), velocity.mean(), velocity.std(), note_highest_velocity, density.mean(), density.std(), silence_proportion, silence.mean(), silence.std(), *time_signature]
 
 def number_of_features():
     v = [[0, 0, "Time_signature", 0, 0, 0, 0], [0, 0, "Note_on", 0, 0, 0, 0]]
