@@ -38,6 +38,5 @@ def total_error(errors):
 if __name__ == '__main__':
     v = cross_validation(MAPE_clf, MAPE_lin)
     errors = total_error(v)
-    print(v)
     print(errors)
 

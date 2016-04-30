@@ -36,7 +36,8 @@ def create_song_features(data):
     """
     time_signature = list(filter(lambda x: x[2] == "Time_signature", data))[0][-4:]
     notes = DataFrame(list(filter(lambda x: x[2][:4] == "Note", data)))
-    total_time = notes[1].max()
+    times = notes[1]
+    total_time = times.max()
     notes_on = notes[notes[2].str[:7] == 'Note_on'][1]
     # pitch based features
     pitch = notes[4]
@@ -44,18 +45,9 @@ def create_song_features(data):
     proportion_bass = len(pitch[pitch < 54]) / len(pitch)
     proportion_medium = 1 - proportion_high - proportion_bass
     # duration based features
-    duration = notes_on.diff()
-    def silence():
-        silences = []
-        on = None
-        for i, note in notes.iterrows():
-            if on:
-                silences.append(note[1] - on)
-                on = None
-            else:
-                on = note[1]
-        return Series(silences)
-    silence = silence()
+    differences = times.diff().dropna()
+    duration = differences.iloc[::2]
+    silence = differences.iloc[1::2]
     silence_proportion = silence.sum() / total_time
     # velocity based features
     velocity = notes[5]
@@ -67,5 +59,4 @@ def create_song_features(data):
 
 def number_of_features():
     v = [[0, 0, "Time_signature", 0, 0, 0, 0], [0, 0, "Note_on", 0, 0, 0, 0]]
-    print(v)
     return len(create_song_features(v))
