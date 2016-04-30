@@ -37,7 +37,7 @@ def create_song_features(data, features_on = 'all'):
         "proportion of strong notes" was replaced by "note with highest velocity"
     """
     if features_on == 'all':
-        features_on = [True for i in range(5)]
+        features_on = [True for i in range(NUMBER_OF_FEATURES)]
     features = []
     notes = DataFrame(list(filter(lambda x: x[2][:4] == "Note", data)))
     # pitch based features
@@ -51,9 +51,9 @@ def create_song_features(data, features_on = 'all'):
     if features_on[1]:
         times = notes[1]
         total_time = times.max()
-        differences = times.diff().dropna()
-        duration = differences.iloc[::2]
-        silence = differences.iloc[1::2]
+        differences = times.diff()
+        duration = differences.iloc[1::2]
+        silence = differences.iloc[::2]
         silence_proportion = silence.sum() / total_time
         features.extend([duration.max(), duration.min(), duration.mean(), duration.std(), silence_proportion, silence.mean(), silence.std()])
     # velocity based features
