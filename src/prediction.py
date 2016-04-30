@@ -33,4 +33,4 @@ def prediction(training_file, test_file, features_on='all', output_file=''):
     return composers, instruments, styles, years, tempos
 
 if __name__ == '__main__':
-    prediction(*sys.argv[1:])
+    prediction(*sys.argv[1:3], 'all', sys.argv[3])
