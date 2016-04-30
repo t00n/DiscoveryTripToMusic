@@ -86,3 +86,8 @@ def create_song_features(data):
     unique, density = np.unique(DBSCAN(400).fit_predict(notes_on.values.reshape(-1, 1)), return_counts=True)
 
     return [pitch().max(), pitch().min(), pitch().mean(), pitch().std(), proportion_high(), proportion_medium(), proportion_bass(), duration.max(), duration.min(), duration.mean(), duration.std(), velocity().max(), velocity().min(), velocity().mean(), velocity().std(), note_highest_velocity(), density.mean(), density.std(), silence_proportion(), silence.mean(), silence.std(), *time_signature]
+
+def number_of_features():
+    v = [[0, 0, "Time_signature", 0, 0, 0, 0], [0, 0, "Note_on", 0, 0, 0, 0]]
+    print(v)
+    return len(create_song_features(v))
