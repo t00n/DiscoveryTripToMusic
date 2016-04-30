@@ -5,6 +5,8 @@ from tqdm import tqdm
 
 from parser import *
 
+NUMBER_OF_FEATURES = 5
+
 def get_features_vectors(filename):
     header = read_output_csv(filename)
     songs = []
@@ -28,35 +30,42 @@ def parse_key_signature(data):
         key_signature = [0, ""]
     return key_signature
 
-def create_song_features(data):
+def create_song_features(data, features_on = [True for i in range(5)]):
     """ missing 
             * chords based features
             * phrases based features
         "proportion of strong notes" was replaced by "note with highest velocity"
     """
-    time_signature = list(filter(lambda x: x[2] == "Time_signature", data))[0][-4:]
+    features = []
     notes = DataFrame(list(filter(lambda x: x[2][:4] == "Note", data)))
-    times = notes[1]
-    total_time = times.max()
-    notes_on = notes[notes[2].str[:7] == 'Note_on'][1]
     # pitch based features
-    pitch = notes[4]
-    proportion_high = len(pitch[pitch >= 72]) / len(pitch)
-    proportion_bass = len(pitch[pitch < 54]) / len(pitch)
-    proportion_medium = 1 - proportion_high - proportion_bass
+    if features_on[0]:
+        pitch = notes[4]
+        proportion_high = len(pitch[pitch >= 72]) / len(pitch)
+        proportion_bass = len(pitch[pitch < 54]) / len(pitch)
+        proportion_medium = 1 - proportion_high - proportion_bass
+        features.extend([pitch.max(), pitch.min(), pitch.mean(), pitch.std(), proportion_high, proportion_medium, proportion_bass])
     # duration based features
-    differences = times.diff().dropna()
-    duration = differences.iloc[::2]
-    silence = differences.iloc[1::2]
-    silence_proportion = silence.sum() / total_time
+    if features_on[1]:
+        times = notes[1]
+        total_time = times.max()
+        differences = times.diff().dropna()
+        duration = differences.iloc[::2]
+        silence = differences.iloc[1::2]
+        silence_proportion = silence.sum() / total_time
+        features.extend([duration.max(), duration.min(), duration.mean(), duration.std(), silence_proportion, silence.mean(), silence.std()])
     # velocity based features
-    velocity = notes[5]
-    note_highest_velocity = notes.groupby(4).max()[5].idxmax()
+    if features_on[2]:
+        velocity = notes[5]
+        note_highest_velocity = notes.groupby(4).max()[5].idxmax()
+        features.extend([velocity.max(), velocity.min(), velocity.mean(), velocity.std(), note_highest_velocity])
     # density based features
-    unique, density = np.unique(DBSCAN(400).fit_predict(notes_on.values.reshape(-1, 1)), return_counts=True)
-
-    return [pitch.max(), pitch.min(), pitch.mean(), pitch.std(), proportion_high, proportion_medium, proportion_bass, duration.max(), duration.min(), duration.mean(), duration.std(), velocity.max(), velocity.min(), velocity.mean(), velocity.std(), note_highest_velocity, density.mean(), density.std(), silence_proportion, silence.mean(), silence.std(), *time_signature]
-
-def number_of_features():
-    v = [[0, 0, "Time_signature", 0, 0, 0, 0], [0, 0, "Note_on", 0, 0, 0, 0]]
-    return len(create_song_features(v))
+    if features_on[3]:
+        notes_on = notes[notes[2].str[:7] == 'Note_on'][1]
+        unique, density = np.unique(DBSCAN(400).fit_predict(notes_on.values.reshape(-1, 1)), return_counts=True)
+        features.extend([density.mean(), density.std()])
+    # time signature
+    if features_on[4]:
+        time_signature = list(filter(lambda x: x[2] == "Time_signature", data))[0][-4:]
+        features.extend([*time_signature])
+    return features
