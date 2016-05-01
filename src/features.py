@@ -5,7 +5,7 @@ from tqdm import tqdm
 
 from parser import *
 
-NUMBER_OF_FEATURES = 5
+NUMBER_OF_FEATURES = 7
 
 def get_features_vectors(filename, features_on='all'):
     header = read_output_csv(filename)
@@ -37,7 +37,7 @@ def create_song_features(data, features_on = 'all'):
         "proportion of strong notes" was replaced by "note with highest velocity"
     """
     if features_on == 'all':
-        features_on = [True for i in range(5)]
+        features_on = [True for i in range(7)]
     features = []
     notes = DataFrame(list(filter(lambda x: x[2][:4] == "Note", data)))
     # pitch based features
@@ -71,3 +71,35 @@ def create_song_features(data, features_on = 'all'):
         time_signature = list(filter(lambda x: x[2] == "Time_signature", data))[0][-4:]
         features.extend([*time_signature])
     return features
+    if features_on[5]:
+        row = len(songs.readlines())
+        times = notes[1]
+        pitch = notes[4]
+        for i in range (0,row):
+            if times.iloc['i',:] == times.iloc['i+1',:] :
+                pitch.iloc['i',:] = pitch.iloc['i',:] + pitch.iloc['i+1',:]
+                chords = pitch.iloc['i',:]
+                i = 1
+                i +=1
+                i
+            else:
+                chords = pitch.iloc['i',:]
+                i = 1
+                i +=1
+                i
+    if features_on[6]:
+        row = len(songs.readlines())
+        times = notes[1]
+        pitch = notes[4]
+        for i in range (0,row):
+            if pitch.iloc['i',:] == pitch.iloc['i+1',:] :
+                times.iloc['i',:] = times.iloc['i',:] + times.iloc['i+1',:]
+                phrases = times.iloc['i',:]
+                i = 1
+                i +=1
+                i
+            else:
+                phrases = times.iloc['i',:]
+                i = 1
+                i +=1
+                i
