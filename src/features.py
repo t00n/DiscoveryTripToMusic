@@ -94,12 +94,12 @@ def create_song_features(data, features_on = 'all'):
             if pitch.iloc['i',:] == pitch.iloc['i+1',:] :
                 times.iloc['i',:] = times.iloc['i',:] + times.iloc['i+1',:]
                 phrases = times.iloc['i',:]
-                i = 1
+                i = 0
                 i +=1
                 i
             else:
                 phrases = times.iloc['i',:]
-                i = 1
+                i = 0
                 i +=1
                 i
     return features
