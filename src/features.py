@@ -32,8 +32,6 @@ def parse_key_signature(data):
 
 def create_song_features(data, features_on = 'all'):
     """ missing 
-            * chords based features
-            * phrases based features
         "proportion of strong notes" was replaced by "note with highest velocity"
     """
     if features_on == 'all':
