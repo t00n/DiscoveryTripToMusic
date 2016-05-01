@@ -70,7 +70,7 @@ def create_song_features(data, features_on = 'all'):
     if features_on[4]:
         time_signature = list(filter(lambda x: x[2] == "Time_signature", data))[0][-4:]
         features.extend([*time_signature])
-    return features
+    # chords based features
     if features_on[5]:
         row = len(songs.readlines())
         times = notes[1]
@@ -87,6 +87,7 @@ def create_song_features(data, features_on = 'all'):
                 i = 1
                 i +=1
                 i
+    # phrases based features
     if features_on[6]:
         row = len(songs.readlines())
         times = notes[1]
@@ -103,3 +104,4 @@ def create_song_features(data, features_on = 'all'):
                 i = 1
                 i +=1
                 i
+    return features
