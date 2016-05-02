@@ -5,7 +5,7 @@ from tqdm import tqdm
 
 from parser import *
 
-NUMBER_OF_FEATURES = 7
+NUMBER_OF_FEATURES = 5
 
 def get_features_vectors(filename, features_on='all'):
     header = read_output_csv(filename)

@@ -21,11 +21,14 @@ def feature_selection():
     perm = permutations([True, False], NUMBER_OF_FEATURES)
     perm.remove([False for i in range(NUMBER_OF_FEATURES)])
     for features_on in perm:
+        print("Trying ", features_on, "...")
         errors = total_error(cross_validation(features_on))
         if errors < current_errors:
             current_errors = errors
             current_features = features_on
-    print(current_features, current_errors)
+        print("MAPE : ", errors)
+    print("Best configuration : ", current_features)
+    print("MAPE : ", current_errors)
 
 if __name__ == '__main__':
     feature_selection()
