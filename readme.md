@@ -6,7 +6,7 @@ The next step will be to find a custom feature representation and maybe write ou
 
 # Installation
 
-With Python 3.5 :
+With Python 3.3 :
 
 ```
     pip install -r requirements.txt

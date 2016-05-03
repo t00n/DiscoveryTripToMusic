@@ -1,12 +1,14 @@
+PYTHON=python3
+
 
 test:
 	perl crossvalidate.pl
 
 validation:
-	python3.5 validation.py
+	$(PYTHON) validation.py
 
 features:
-	python3.5 feature_selection.py
+	$(PYTHON) feature_selection.py
 
 clean:
 	rm *.csv
