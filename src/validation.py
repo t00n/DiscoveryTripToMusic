@@ -1,5 +1,6 @@
 from prediction import prediction
 from features import get_output
+from settings import best_features
 
 TEST_FILE="test-data-file-%d.csv"
 TRAINING_FILE="training-data-file-%d.csv"
@@ -36,7 +37,7 @@ def total_error(errors):
     return sum([sum(x) for x in errors])/25
 
 if __name__ == '__main__':
-    v = cross_validation()
+    v = cross_validation(best_features)
     errors = total_error(v)
     print(errors)
 

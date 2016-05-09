@@ -1,5 +1,6 @@
 from validation import *
 from features import NUMBER_OF_FEATURES
+from settings import save_best_features
 from copy import copy
 
 def permutations(ls, n):
@@ -29,6 +30,8 @@ def feature_selection():
         print("MAPE : ", errors)
     print("Best configuration : ", current_features)
     print("MAPE : ", current_errors)
+    return current_features
 
 if __name__ == '__main__':
-    feature_selection()
+    best_features = feature_selection()
+    save_best_features(best_features)

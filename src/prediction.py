@@ -4,6 +4,7 @@ import sys
 
 from parser import write_prediction_csv
 from features import *
+from settings import best_features
 
 def prediction(training_file, test_file, features_on='all', output_file=''):
     training_set = get_features_vectors(training_file, features_on)
@@ -33,4 +34,4 @@ def prediction(training_file, test_file, features_on='all', output_file=''):
     return composers, instruments, styles, years, tempos
 
 if __name__ == '__main__':
-    prediction(sys.argv[1], sys.argv[2], 'all', sys.argv[3])
+    prediction(sys.argv[1], sys.argv[2], best_features, sys.argv[3])
