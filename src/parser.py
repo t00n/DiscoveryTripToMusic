@@ -5,6 +5,8 @@ DATA_REP = "../data/"
 HEADER_FILE = DATA_REP + "dataset-balanced.csv"
 SONG_REP = DATA_REP + "songs/"
 
+TARGETS_NAMES = ['Performer', 'Inst.', 'Style', 'Year', 'Tempo']
+
 """ IO """
 def read_song_csv(id):
     def parseElem(elem):

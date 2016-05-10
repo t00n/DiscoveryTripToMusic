@@ -6,6 +6,7 @@ from tqdm import tqdm
 from parser import *
 
 NUMBER_OF_FEATURES = 5
+TARGETS = dict(zip(TARGETS_NAMES, ['cls', 'cls', 'cls', 'lin', 'lin']))
 
 def get_features_vectors(filename, features_on='all'):
     header = read_output_csv(filename)

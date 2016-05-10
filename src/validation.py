@@ -1,6 +1,5 @@
-from prediction import prediction
-from features import get_output
-from settings import best_features
+from prediction import predict_clf, predict_lin
+from features import get_output, TARGETS
 
 TEST_FILE="test-data-file-%d.csv"
 TRAINING_FILE="training-data-file-%d.csv"
@@ -21,23 +20,24 @@ def MAPE_lin(out, i):
     assert(len(i) == len(out))
     return sum(map(lambda x: abs((x[0] - x[1])/x[0]), zip(i, out)))/36
 
-def cross_validation(features_on='all', error_clf=MAPE_clf, error_lin=MAPE_lin):
-    errors = [[] for i in range(5)]
+def cross_validation(target, type, features_on='all', error_clf=MAPE_clf, error_lin=MAPE_lin):
+    errors = []
     for i in range(5):
         output = get_output(TEST_FILE % i)
-        composers, instruments, styles, years, tempos = prediction(TRAINING_FILE % i, TEST_FILE %i, features_on)
-        errors[0].append(error_clf(list(output['Performer']), composers))
-        errors[1].append(error_clf(list(output['Inst.']), instruments))
-        errors[2].append(error_clf(list(output['Style']), styles))
-        errors[3].append(error_lin(list(output['Year']), years))
-        errors[4].append(error_lin(list(output['Tempo']), tempos))
+        if type == 'cls':
+            result = predict_clf(TRAINING_FILE % i, TEST_FILE % i, target, features_on)
+            errors.append(error_clf(output[target], result))
+        elif type == 'lin':
+            result = predict_lin(TRAINING_FILE % i, TEST_FILE % i, target, features_on)
+            errors.append(error_lin(output[target], result))
     return errors
 
-def total_error(errors):
-    return sum([sum(x) for x in errors])/25
 
 if __name__ == '__main__':
-    v = cross_validation(best_features)
-    errors = total_error(v)
-    print(errors)
+    from settings import best_features
+    for target, t in TARGETS.items():
+        print("Crossvalidation : ", target, t, best_features[target])
+        v = cross_validation(target, t, best_features[target])
+        errors = sum(v)/len(TARGETS)
+        print(errors)
 
