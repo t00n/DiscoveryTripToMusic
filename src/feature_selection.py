@@ -33,7 +33,7 @@ def best_neighbour(target, type, features):
     return best_features, best_errors
 
 
-def feature_selection(target, type):
+def heuristic_feature_selection(target, type):
     print("Selecting best features for target %s..." % target)
     perm = permutations([True, False], NUMBER_OF_FEATURES)
     perm.remove([False for i in range(NUMBER_OF_FEATURES)])
@@ -52,6 +52,25 @@ def feature_selection(target, type):
     print("Best configuration : ", current_features)
     print("Error : ", current_errors)
     return current_features
+
+def feature_selection(target, type):
+    print("Selecting best features for target %s..." % target)
+    perm = permutations([True, False], NUMBER_OF_FEATURES)
+    perm.remove([False for i in range(NUMBER_OF_FEATURES)])
+    current_features = perm[0]
+    current_errors = mean(cross_validation(target, type, current_features))
+    for features_on in perm:
+        print("Trying ", features_on, "...")
+        errors = mean(cross_validation(target, type, features_on))
+        if errors < current_errors:
+            current_features = features_on
+            current_errors = errors
+            print('Improvement : ', current_features)
+            print('Error : ', current_errors)
+    print("Best configuration : ", current_features)
+    print("Error : ", current_errors)
+    return current_features
+
 
 if __name__ == '__main__':
     best_features = {}
