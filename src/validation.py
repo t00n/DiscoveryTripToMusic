@@ -14,14 +14,14 @@ def absolute_error_lin(i, out):
 
 def MAPE_clf(out, i):
     assert(len(i) == len(out))
-    return len(list(filter(lambda x: x[0] != x[1], zip(i, out))))/36
+    return len(list(filter(lambda x: x[0] != x[1], zip(i, out))))/len(out)
 
 def MAPE_lin(out, i):
     assert(len(i) == len(out))
-    return sum(map(lambda x: abs((x[0] - x[1])/x[0]), zip(i, out)))/36
+    return sum(map(lambda x: abs((x[0] - x[1])/x[0]), zip(i, out)))/len(out)
 
 def MAPE_all(errors):
-    return sum(errors)/len(TARGETS)
+    return sum(errors)/5
 
 def cross_validation(target, type, features_on='all', error_clf=MAPE_clf, error_lin=MAPE_lin):
     errors = []
@@ -38,9 +38,12 @@ def cross_validation(target, type, features_on='all', error_clf=MAPE_clf, error_
 
 if __name__ == '__main__':
     from settings import best_features
+    total = 0
     for target, t in TARGETS.items():
         print("Crossvalidation : ", target, t, best_features[target])
         v = cross_validation(target, t, best_features[target])
         errors = MAPE_all(v)
-        print(errors)
+        print('MAPE : %f' % errors)
+        total += errors
+    print('Total MAPE : %f' % (total / len(TARGETS)))
 
