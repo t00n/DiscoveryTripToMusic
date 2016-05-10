@@ -24,13 +24,13 @@ def feature_selection(target, type):
     perm.remove([False for i in range(NUMBER_OF_FEATURES)])
     for features_on in perm:
         print("Trying ", features_on, "...")
-        errors = MAPE_all(cross_validation(target, type, features_on))
+        errors = mean(cross_validation(target, type, features_on, absolute_error_clf, absolute_error_lin))
         if errors < current_errors:
             current_errors = errors
             current_features = features_on
-        print("MAPE : ", errors)
+        print("mean error : ", errors)
     print("Best configuration : ", current_features)
-    print("MAPE : ", current_errors)
+    print("Best mean  error : ", current_errors)
     return current_features
 
 if __name__ == '__main__':

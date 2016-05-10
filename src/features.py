@@ -1,7 +1,6 @@
 from sklearn.cluster import KMeans, DBSCAN
 from pandas import DataFrame, Series, merge
 import numpy as np
-from tqdm import tqdm
 
 from parser import *
 
@@ -11,7 +10,7 @@ TARGETS = dict(zip(TARGETS_NAMES, ['cls', 'cls', 'cls', 'lin', 'lin']))
 def get_features_vectors(filename, features_on='all'):
     header = read_output_csv(filename)
     songs = []
-    for index, row in tqdm(header.iterrows()):
+    for index, row in header.iterrows():
         data = read_song_csv(int(row[0]))
         features = create_song_features(data, features_on)
         songs.append(features)

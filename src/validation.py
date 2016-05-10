@@ -1,5 +1,6 @@
 from prediction import predict_clf, predict_lin
 from features import get_output, TARGETS
+from collections import defaultdict
 
 TEST_FILE="test-data-file-%d.csv"
 TRAINING_FILE="training-data-file-%d.csv"
@@ -20,8 +21,8 @@ def MAPE_lin(out, i):
     assert(len(i) == len(out))
     return sum(map(lambda x: abs((x[0] - x[1])/x[0]), zip(i, out)))/len(out)
 
-def MAPE_all(errors):
-    return sum(errors)/5
+def mean(errors):
+    return sum(errors)/len(errors)
 
 def cross_validation(target, type, features_on='all', error_clf=MAPE_clf, error_lin=MAPE_lin):
     errors = []
@@ -38,12 +39,11 @@ def cross_validation(target, type, features_on='all', error_clf=MAPE_clf, error_
 
 if __name__ == '__main__':
     from settings import best_features
-    total = 0
+    errors = {}
     for target, t in TARGETS.items():
         print("Crossvalidation : ", target, t, best_features[target])
-        v = cross_validation(target, t, best_features[target])
-        errors = MAPE_all(v)
-        print('MAPE : %f' % errors)
-        total += errors
-    print('Total MAPE : %f' % (total / len(TARGETS)))
+        v = cross_validation(target, t, best_features[target], absolute_error_clf, absolute_error_lin)
+        errors[target] = v
+    for target, error in errors.items():
+        print(target, ' : ', error)
 
