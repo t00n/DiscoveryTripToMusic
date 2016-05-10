@@ -20,6 +20,9 @@ def MAPE_lin(out, i):
     assert(len(i) == len(out))
     return sum(map(lambda x: abs((x[0] - x[1])/x[0]), zip(i, out)))/36
 
+def MAPE_all(errors):
+    return sum(errors)/len(TARGETS)
+
 def cross_validation(target, type, features_on='all', error_clf=MAPE_clf, error_lin=MAPE_lin):
     errors = []
     for i in range(5):
@@ -38,6 +41,6 @@ if __name__ == '__main__':
     for target, t in TARGETS.items():
         print("Crossvalidation : ", target, t, best_features[target])
         v = cross_validation(target, t, best_features[target])
-        errors = sum(v)/len(TARGETS)
+        errors = MAPE_all(v)
         print(errors)
 

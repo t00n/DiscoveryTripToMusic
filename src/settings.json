@@ -1,1 +1,1 @@
-{"best_features": {"Performer": [true, false, false, false, true], "Inst.": [true, false, false, false, true], "Style": [true, false, false, false, true], "Year": [true, false, false, false, true], "Tempo": [true, false, false, false, true]}}
+{"best_features": {"Performer": [true, false, false, false, true], "Inst.": [true, false, true, false, true], "Tempo": [false, true, false, false, true], "Year": [true, true, false, false, true], "Style": [true, false, false, false, true]}}

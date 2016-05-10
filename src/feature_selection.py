@@ -1,5 +1,5 @@
 from validation import *
-from features import NUMBER_OF_FEATURES
+from features import NUMBER_OF_FEATURES, TARGETS
 from settings import save_best_features
 from copy import copy
 
@@ -16,14 +16,15 @@ def permutations(ls, n):
             return current
     return permutations_rec(list(map(lambda x: [x], ls)), n)
 
-def feature_selection():
+def feature_selection(target, type):
+    print("Selecting best features for target %s..." % target)
     current_features = None
     current_errors = float('inf')
     perm = permutations([True, False], NUMBER_OF_FEATURES)
     perm.remove([False for i in range(NUMBER_OF_FEATURES)])
     for features_on in perm:
         print("Trying ", features_on, "...")
-        errors = total_error(cross_validation(features_on))
+        errors = MAPE_all(cross_validation(target, type, features_on))
         if errors < current_errors:
             current_errors = errors
             current_features = features_on
@@ -33,5 +34,7 @@ def feature_selection():
     return current_features
 
 if __name__ == '__main__':
-    best_features = feature_selection()
+    best_features = {}
+    for target, type in TARGETS.items():
+        best_features[target] = feature_selection(target, type)
     save_best_features(best_features)
