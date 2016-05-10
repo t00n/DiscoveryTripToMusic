@@ -19,6 +19,7 @@ def get_features_vectors(filename, features_on='all'):
     songs = np.array(songs)
     return songs
 
+@memoized
 def get_output(f):
     header = read_header_csv(HEADER_FILE)
     output = read_output_csv(f)

@@ -1,6 +1,8 @@
 import csv
 from pandas import read_csv
 
+from memoize import memoized
+
 DATA_REP = "../data/"
 HEADER_FILE = DATA_REP + "dataset-balanced.csv"
 SONG_REP = DATA_REP + "songs/"
@@ -8,6 +10,7 @@ SONG_REP = DATA_REP + "songs/"
 TARGETS_NAMES = ['Performer', 'Inst.', 'Style', 'Year', 'Tempo']
 
 """ IO """
+@memoized
 def read_song_csv(id):
     def parseElem(elem):
         elem = elem.strip()
@@ -21,9 +24,11 @@ def read_song_csv(id):
         reader = csv.reader(csvfile)
         return [[parseElem(col) for col in row] for row in reader]
 
+@memoized
 def read_header_csv(f):
     return read_csv(f, header=0, sep=';')
 
+@memoized
 def read_output_csv(f):
     return read_csv(f, header=-1, sep=';')
 

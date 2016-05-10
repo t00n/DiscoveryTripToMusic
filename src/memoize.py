@@ -21,10 +21,10 @@ class memoized(object):
          # better to not cache than blow up.
          return self.func(*args)
       if args in self.cache:
-         print("Using memoized %s with args %s" % (self.func.__name__, str(args)))
+         # print("Using memoized %s with args %s" % (self.func.__name__, str(args)))
          return self.cache[args]
       else:
-         print("Memoizing %s with args %s" % (self.func.__name__, str(args)))
+         # print("Memoizing %s with args %s" % (self.func.__name__, str(args)))
          value = self.func(*args)
          self.cache[args] = value
          return value
