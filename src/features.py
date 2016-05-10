@@ -3,10 +3,12 @@ from pandas import DataFrame, Series, merge
 import numpy as np
 
 from parser import *
+from memoize import memoized
 
 NUMBER_OF_FEATURES = 5
 TARGETS = dict(zip(TARGETS_NAMES, ['cls', 'cls', 'cls', 'lin', 'lin']))
 
+@memoized
 def get_features_vectors(filename, features_on='all'):
     header = read_output_csv(filename)
     songs = []

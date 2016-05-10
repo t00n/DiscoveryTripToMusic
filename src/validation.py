@@ -24,7 +24,7 @@ def MAPE_lin(out, i):
 def mean(errors):
     return sum(errors)/len(errors)
 
-def cross_validation(target, type, features_on='all', error_clf=MAPE_clf, error_lin=MAPE_lin):
+def cross_validation(target, type, features_on='all', error_clf=absolute_error_clf, error_lin=absolute_error_lin):
     errors = []
     for i in range(5):
         output = get_output(TEST_FILE % i)
@@ -42,7 +42,7 @@ if __name__ == '__main__':
     errors = {}
     for target, t in TARGETS.items():
         print("Crossvalidation : ", target, t, best_features[target])
-        v = cross_validation(target, t, best_features[target], absolute_error_clf, absolute_error_lin)
+        v = cross_validation(target, t, best_features[target])
         errors[target] = v
     for target, error in errors.items():
         print(target, ' : ', error)

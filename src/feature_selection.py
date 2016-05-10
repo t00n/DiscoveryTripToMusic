@@ -2,6 +2,7 @@ from validation import *
 from features import NUMBER_OF_FEATURES, TARGETS
 from settings import save_best_features
 from copy import copy
+from random import randrange
 
 def permutations(ls, n):
     def permutations_rec(current, n):
@@ -16,21 +17,40 @@ def permutations(ls, n):
             return current
     return permutations_rec(list(map(lambda x: [x], ls)), n)
 
+def best_neighbour(target, type, features):
+    best_features = copy(features)
+    best_errors = mean(cross_validation(target, type, best_features))
+    current_features = copy(features)
+    for i in range(len(features)):
+        current_features[i] = not current_features[i]
+        if current_features != features and current_features != [False for i in range(NUMBER_OF_FEATURES)]:
+            print("Trying neighbour ", current_features, "...")
+            errors = mean(cross_validation(target, type, current_features))
+            if errors < best_errors:
+                best_features = copy(current_features)
+                best_errors = errors
+        current_features[i] = not current_features[i]
+    return best_features, best_errors
+
+
 def feature_selection(target, type):
     print("Selecting best features for target %s..." % target)
-    current_features = None
-    current_errors = float('inf')
     perm = permutations([True, False], NUMBER_OF_FEATURES)
     perm.remove([False for i in range(NUMBER_OF_FEATURES)])
-    for features_on in perm:
-        print("Trying ", features_on, "...")
-        errors = mean(cross_validation(target, type, features_on, absolute_error_clf, absolute_error_lin))
-        if errors < current_errors:
-            current_errors = errors
-            current_features = features_on
-        print("mean error : ", errors)
+    current_features = perm[randrange(len(perm))]
+    improvement = True
+    print('Initial : ', current_features)
+    while improvement:
+        improvement = False
+        best_features, errors = best_neighbour(target, type, current_features)
+        if best_features != current_features:
+            print('Improvement : ', best_features)
+            print('Error : ', errors)
+            improvement = True
+            current_features = best_features
+        current_errors = errors
     print("Best configuration : ", current_features)
-    print("Best mean  error : ", current_errors)
+    print("Error : ", current_errors)
     return current_features
 
 if __name__ == '__main__':
