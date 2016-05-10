@@ -5,7 +5,7 @@ import numpy as np
 from parser import *
 from memoize import memoized
 
-NUMBER_OF_FEATURES = 5
+NUMBER_OF_FEATURES = 9
 TARGETS = dict(zip(TARGETS_NAMES, ['cls', 'cls', 'cls', 'lin', 'lin']))
 
 @memoized
@@ -42,33 +42,41 @@ def create_song_features(data, features_on = 'all'):
     features = []
     notes = DataFrame(list(filter(lambda x: x[2][:4] == "Note", data)))
     # pitch based features
+    pitch = notes[4]
     if features_on[0]:
-        pitch = notes[4]
         proportion_high = len(pitch[pitch >= 72]) / len(pitch)
         proportion_bass = len(pitch[pitch < 54]) / len(pitch)
         proportion_medium = 1 - proportion_high - proportion_bass
-        features.extend([pitch.max(), pitch.min(), pitch.mean(), pitch.std(), proportion_high, proportion_medium, proportion_bass])
-    # duration based features
+        features.extend([proportion_high, proportion_medium, proportion_bass])
     if features_on[1]:
-        times = notes[1]
-        total_time = times.max()
-        differences = times.diff()
+        features.extend([pitch.max(), pitch.min(), pitch.mean(), pitch.std()])
+    # duration based features
+    times = notes[1]
+    total_time = times.max()
+    differences = times.diff()
+    if features_on[2]:
+        features.append(total_time)
+    if features_on[3]:
         duration = differences.iloc[1::2]
+        features.extend([duration.max(), duration.min(), duration.mean(), duration.std()])
+    if features_on[4]:
         silence = differences.iloc[::2]
         silence_proportion = silence.sum() / total_time
-        features.extend([duration.max(), duration.min(), duration.mean(), duration.std(), silence_proportion, silence.mean(), silence.std()])
+        features.extend([silence_proportion, silence.mean(), silence.std()])
     # velocity based features
-    if features_on[2]:
-        velocity = notes[5]
+    if features_on[5]:
         note_highest_velocity = notes.groupby(4).max()[5].idxmax()
-        features.extend([velocity.max(), velocity.min(), velocity.mean(), velocity.std(), note_highest_velocity])
+        features.append(note_highest_velocity)
+    if features_on[6]:
+        velocity = notes[5]
+        features.extend([velocity.max(), velocity.min(), velocity.mean(), velocity.std()])
     # density based features
-    if features_on[3]:
+    if features_on[7]:
         notes_on = notes[notes[2].str[:7] == 'Note_on'][1]
         unique, density = np.unique(DBSCAN(400).fit_predict(notes_on.values.reshape(-1, 1)), return_counts=True)
-        features.extend([density.mean(), density.std()])
+        features.extend([density.max(), density.min(), density.mean(), density.std()])
     # time signature
-    if features_on[4]:
+    if features_on[8]:
         time_signature = list(filter(lambda x: x[2] == "Time_signature", data))[0][-4:]
         features.extend([*time_signature])
     # chords based features
