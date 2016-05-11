@@ -59,7 +59,7 @@ def feature_selection(target, type):
     perm.remove([False for i in range(NUMBER_OF_FEATURES)])
     current_features = perm[0]
     current_errors = mean(cross_validation(target, type, current_features))
-    for features_on in perm:
+    for features_on in perm[1:]:
         print("Trying ", features_on, "...")
         errors = mean(cross_validation(target, type, features_on))
         if errors < current_errors:

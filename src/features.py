@@ -22,6 +22,12 @@ def get_output(f):
     output = read_output_csv(f)
     return merge(output, header, how='inner', left_on=[0], right_on=['id'])
 
+def get_all(training_file, test_file, features_on):
+    training_set = get_features_vectors(training_file, features_on)
+    output = get_output(training_file)
+    test_set = get_features_vectors(test_file, features_on)
+    return training_set, output, test_set
+    
 def parse_key_signature(data):
     try:
         one, two = list(filter(lambda x: x[2] == "Key_signature", data))[0][-2:]
