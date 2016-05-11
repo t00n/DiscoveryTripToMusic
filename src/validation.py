@@ -1,5 +1,5 @@
 from prediction import predict_clf, predict_lin
-from features import get_output, TARGETS
+from features import get_output, TARGETS, get_all
 from collections import defaultdict
 
 TEST_FILE="test-data-file-%d.csv"
@@ -27,12 +27,12 @@ def mean(errors):
 def cross_validation(target, type, features_on='all', error_clf=absolute_error_clf, error_lin=absolute_error_lin):
     errors = []
     for i in range(5):
-        output = get_output(TEST_FILE % i)
+        training_set, output, test_set = get_all(TRAINING_FILE % i, TEST_FILE % i, features_on)
         if type == 'cls':
-            result = predict_clf(TRAINING_FILE % i, TEST_FILE % i, target, features_on)
+            result = predict_clf(training_set, output[target], test_set)
             errors.append(error_clf(output[target], result))
         elif type == 'lin':
-            result = predict_lin(TRAINING_FILE % i, TEST_FILE % i, target, features_on)
+            result = predict_lin(training_set, output[target], test_set)
             errors.append(error_lin(output[target], result))
     return errors
 
