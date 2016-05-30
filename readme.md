@@ -14,12 +14,13 @@ With Python 3.3 :
 ```
 ## setup environment to use the library python speech features to get MFCC
 
-'''
+```
     git clone https://github.com/jameslyons/python_speech_features.git
     cd ./python_speech_features     
     sudo python setup.py install
     
-'''
+```
+
 You can use a virtualenv.
 
 # Use
