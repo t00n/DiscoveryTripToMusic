@@ -11,18 +11,6 @@ With Python 3.3 :
 ```
     pip install -r requirements.txt
 
-```
-## the library python speech features
-
-get MFCC
-
-```
-    git clone https://github.com/jameslyons/python_speech_features.git
-    cd ./python_speech_features     
-    sudo python setup.py install
-     
-```
-
 
 You can use a virtualenv.
 
@@ -52,3 +40,15 @@ This computes the Mean Absolute Percentage Error
 
 Selects the best features using our cross-validation function and minimizing the Mean Absolute Percentage Error. There are 5 features for the moment and activation is represented by a list of booleans.
 Takes approximately 10-15 mins.
+
+```
+## the library python speech features
+
+get MFCC (which is used to get mfcc features)
+
+```
+    git clone https://github.com/jameslyons/python_speech_features.git
+    cd ./python_speech_features     
+    sudo python setup.py install
+     
+```
