@@ -1,12 +1,19 @@
 from sklearn.svm import SVC
 from sklearn.linear_model import LinearRegression
+from sklearn import datasets
+from sklearn.multiclass import OneVsOneClassifier
 import sys
+
 
 from parser import write_prediction_csv, TARGETS_NAMES
 from features import *
 
 def predict_clf(training_set, output, test_set):
-    clf = SVC()
+    clf = OneVsOneClassifier(SVC(kernel='linear'))
+    from sklearn import preprocessing
+    training_set=preprocessing.scale(training_set)
+    test_set=preprocessing.scale(test_set)
+
     clf.fit(training_set, output)
     return clf.predict(test_set)
 
@@ -16,7 +23,7 @@ def predict_lin(training_set, output, test_set):
     return lin.predict(test_set)
 
 def prediction(training_file, test_file, features_on, output_file=''):
-    clf = SVC()
+    clf = OneVsOneClassifier(SVC(kernel='linear'))
     lin = LinearRegression()
 
     training_set, output, test_file = get_all(training_file, test_file, features_on)
