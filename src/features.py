@@ -94,6 +94,10 @@ def features_time_signature(id):
     time_signature = list(filter(lambda x: x[2] == "Time_signature", data))[0][-4:]
     return [*time_signature]
 
+def features_time_mfcc(id):
+    data = read_mfcc_csv(id)
+    return data
+
 features_list = [
     features_proportion,
     features_pitch,
@@ -103,7 +107,8 @@ features_list = [
     features_highest_velocity,
     features_velocity,
     features_density,
-    features_time_signature
+    features_time_signature,
+    features_time_mfcc
 ]
 
 features_list = list(map(memoized, features_list))
