@@ -16,7 +16,7 @@ def read_song_csv(id):
     def parseElem(elem):
         elem = elem.strip()
         try:
-            elem = int(elem)
+            elem = float(elem)
         except:
             pass
         return elem
