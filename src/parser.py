@@ -6,6 +6,7 @@ from memoize import memoized
 DATA_REP = "../data/"
 HEADER_FILE = DATA_REP + "dataset-balanced.csv"
 SONG_REP = DATA_REP + "songs/"
+MFCC_REP = DATA_REP + "mfccs/"
 
 TARGETS_NAMES = ['Performer', 'Inst.', 'Style', 'Year', 'Tempo']
 
@@ -24,6 +25,17 @@ def read_song_csv(id):
         reader = csv.reader(csvfile)
         return [[parseElem(col) for col in row] for row in reader]
 
+@memoized
+def read_mfcc_csv(id):
+    res=[]
+    mfcc_file = MFCC_REP + str(id) + ".csv"
+    with open(mfcc_file) as csvfile:
+        temp=float(csvfile.readline().split('[')[1].split(']')[0])
+        res.append(temp)
+        temps=csvfile.readline().split('\n')[0].split(',')
+        for item in temps:
+            res.append(float(item))
+    return res
 @memoized
 def read_header_csv(f):
     return read_csv(f, header=0, sep=';')
