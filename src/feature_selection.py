@@ -3,6 +3,8 @@ from features import NUMBER_OF_FEATURES, TARGETS
 from settings import save_best_features
 from copy import copy
 from random import randrange
+from multiprocessing import Pool, cpu_count
+from functools import partial
 
 def permutations(ls, n):
     def permutations_rec(current, n):
@@ -53,20 +55,23 @@ def heuristic_feature_selection(target, type):
     print("Error : ", current_errors)
     return current_features
 
+def threaded(target, type, features_on):
+    return (features_on, mean(cross_validation(target, type, features_on)))
+
 def feature_selection(target, type):
     print("Selecting best features for target %s..." % target)
+    print("Using %d cpu(s)" % cpu_count())
     perm = permutations([True, False], NUMBER_OF_FEATURES)
     perm.remove([False for i in range(NUMBER_OF_FEATURES)])
-    current_features = perm[0]
-    current_errors = mean(cross_validation(target, type, current_features))
-    for features_on in perm[1:]:
-        print("Trying ", features_on, "...")
-        errors = mean(cross_validation(target, type, features_on))
-        if errors < current_errors:
-            current_features = features_on
-            current_errors = errors
-            print('Improvement : ', current_features)
-            print('Error : ', current_errors)
+    pool = Pool(cpu_count())
+    t = partial(threaded, target, type)
+    res = pool.map(t, perm)
+    current_features = []
+    current_errors = 500000000
+    for r in res:
+        if r[1] < current_errors:
+            current_errors = r[1]
+            current_features = r[0]
     print("Best configuration : ", current_features)
     print("Error : ", current_errors)
     return current_features
