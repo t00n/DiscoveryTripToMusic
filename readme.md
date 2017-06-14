@@ -10,9 +10,9 @@ With Python 3.3 :
 
 ```
     pip install -r requirements.txt
+```
 
-
-You can use a virtualenv.
+You can use virtualenv.
 
 # Use
 
@@ -41,7 +41,6 @@ This computes the Mean Absolute Percentage Error
 Selects the best features using our cross-validation function and minimizing the Mean Absolute Percentage Error. There are 5 features for the moment and activation is represented by a list of booleans.
 Takes approximately 10-15 mins.
 
-```
 ## the library python speech features
 
 get MFCC (which is used to get mfcc features)
